@@ -219,4 +219,89 @@ state-out - This is the path to the destination file.
 * To set the log path use the environmental variable `TF_LOG_PATH` with the full path as it's value
 * as of 0.15 you can set the logs for either terraform core or provier plugins using the enviromental variables `TF_LOG_CORE` or `TF_LOG_PROVIDER`
 * if terraform core crashes it will create a crash.log file
- 
+ # 5 Interact with terraform modules
+ * the main configuartion you are working on is the *root moule*
+ * modules can call other modules
+ * there is a hierarchial structure modules where the root module calls the child module which in turn can invoke another child module
+ * the terminology is:
+    * the module invoking the module code block is the *calling module*
+    * the module being called is the *child module*
+* modules are invoked by using the `module <name_label> {}` configuration
+* To find the module terraform uses the source argument in the module block. The locations can be:
+    * local path
+    * terraform registry
+    * Github
+    * Bitbucket
+    * Generic Git, Mercurial repos
+    * HTTP URLs
+    * S3 buckets
+    * GCS buckets
+* If the module source is remote terraform will copy it to the .terraform directory of where terraform init was ran
+## 5B Interact wih modules Inputs and Outputs
+* module inputs serve as parameters for the terraform module. 
+* you can declare variables in the root module, using the -var cli switch or through environmental variables
+* when you define input modules in the child module, the calling module **should pass the values from the child module**
+* the input variables can be declared in the variables.tf file of the module.
+* The variables have to be **unique** amoung all variables within the **same** module
+* terraform 0.13 introduced the `for_each`,`count` and `depends_on` meta-arguments in a module 
+## 5C Describe variable scope within modules/child modules
+* a local value defined in a module, is only available in the context of that module
+* any calling module or child modules invoked by the calling module does not have access to the module local value unless it is exposed as an output 
+## 5D Discover Modules from the public module registry
+* when consuming a module from the public registry it is best to specify a version
+* it is also recommended to specify any child module versions to prevent any configuration issues
+* to specify a version you can use the constraint expressions such as:
+    * = - specific version
+    * >= - greater or equal to
+    * ~> - any version in the <major><minor>.x version
+    * >= 1.0.0, <= 2.0.0 - any version in between the two versions
+* version numbers are **only** applicable to public modules and not local
+# 6 Terraform workflow
+## 6A Terraform workflow
+The terraform defines the core workflow in three parts:
+    * write - author infrastructure as code
+    * Plan - preview the changes
+    * Apply - provision reproduciable infrastructure
+## 6B Initialise a terraform working directory
+* terraform is the first command you run on a terraform configuration
+* the init command will prepare the directory holding the terraform configuration. It performs:
+    * prepare the state storage: wether your using local or remote it prepares that backend for use (checks it is accessible)
+    * retrieve modules: It will check for any modules being used, pull them from their source and place them in the .terraform/modules directory
+    * retrieve plugins: terraform init will look for references direct and indirect to providers and provisioners and pulls them down
+* you can run `terraform init` multiple times without issue. If nothing has changed nothing will happen. You do however need to run `terraform init` when:
+    * you have updated a module, provisioner or provisioner
+    * you have want to change the backend from local to remote
+    * you have added a new module, provider or provisioner
+* as of terraform 0.14 when you run `terraform init` it created a file called .terraform.lock.hcl. This contains a list of providers used, including the version constraints and hashes of the provider plugin
+## 6C validate a terraform configuration
+* terraform validate will validate the syntax of the terraform configuration, including providers and modules
+* if you run terraform plan or a terraform apply wiout a saved plan it will automatically run a validate
+* terraform validate will download the plugins for as it needs those plugins to validate the configuration
+## 6D generate and review an execution plan
+* the terraform plan command is used to create an execution plan
+* terraform plan performs:
+    * syntax validation
+    * refresh of state based on the actual environment
+    * perform a comparison of the state file against the configuration
+* during the plan terraform might alter the state file if it finds out that one of the managed resources has changed since the previous refresh
+* there are several arguments you can use when running terraform plan such as:
+    * - out: specify a destination file output for a saved execution plan
+    * - refresh: whether or not the state should be refreshed
+    * - var: input variables you can pass the plan
+    * - var-file: specify a file that contains key/value pairs of variable values
+## 6E execute changes to infrastructure with terraform
+* terraform apply will run a plan first by default
+* if you don't want the plan to run and no prompts you can save an execution plan and run terraform apply with that
+* there are several arguments you can apply when running terraform apply such as:
+    * -auto-approve:
+    * -input: determines whether or not to prompt for input.
+    * -var: input variables
+    * -var-file: specify a variable file input of inputs
+    * -refresh: whether the state should be refreshed: default=true
+## 6F terraform destroy
+* terraform destroy will delete all the resources and dependencies
+* there is two main arguments:
+    * -auto-approve
+    * -target: you can specify a terget and only the target and its dependecies will be deleted. You can have multiple instances of this flag
+# 7 Implement and maintain state
+
