@@ -219,6 +219,7 @@ state-out - This is the path to the destination file.
 * To set the log path use the environmental variable `TF_LOG_PATH` with the full path as it's value
 * as of 0.15 you can set the logs for either terraform core or provier plugins using the enviromental variables `TF_LOG_CORE` or `TF_LOG_PROVIDER`
 * if terraform core crashes it will create a crash.log file
+---
  # 5 Interact with terraform modules
  * the main configuartion you are working on is the *root moule*
  * modules can call other modules
@@ -256,7 +257,9 @@ state-out - This is the path to the destination file.
     * ~> - any version in the <major><minor>.x version
     * >= 1.0.0, <= 2.0.0 - any version in between the two versions
 * version numbers are **only** applicable to public modules and not local
+---
 # 6 Terraform workflow
+
 ## 6A Terraform workflow
 The terraform defines the core workflow in three parts:
     * write - author infrastructure as code
@@ -303,5 +306,7 @@ The terraform defines the core workflow in three parts:
 * there is two main arguments:
     * -auto-approve
     * -target: you can specify a terget and only the target and its dependecies will be deleted. You can have multiple instances of this flag
+---
 # 7 Implement and maintain state
+
 
