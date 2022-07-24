@@ -35,7 +35,7 @@ The advantages of IaC can be broken down into a few categories:
 * A prpvider is an executable that contains the code necessary to interact with the API of the service it was written for.
 * providers can be explicitly defined in the code or implicitly by the resources that are provisioned or data sources that are used
 * The recommended best practise is to use the `terraform_providers block`
-```
+``` javascript 
 terraform {
     required_providers {
         azurerm = {
@@ -66,7 +66,7 @@ The interactions with providers is through plug-ins
 
 ### Multiple instances of a provider
 * If you want to create resource in multiple regions then you have to define multiple instances of the provider. To accomplish this you have to use the `alias` meta-argument. This enables you to reference that provider in the resource declerations
-```
+``` javascript 
 terraform {
     provider "aws" {
         region = "us-east-1"
@@ -96,8 +96,8 @@ resource aws_ec2_instance "ec2-west-1" {
 * community and published and maintained by individuals in the community. They are not officially supported
 
 The required providers block is defined in the terraform block
-```
-# SYNTAX
+``` javascript 
+// SYNTAX
 terraform {
     required_providers {
         <LOCAL NAME> {
@@ -107,7 +107,7 @@ terraform {
         }
     }
 }
-# Example
+// Example
 terraform {
     required_providers {
         aws = {
@@ -396,7 +396,7 @@ The terraform defines the core workflow in three parts:
     - map: a collection of values each identified by a unique key of type string
     - set: a collection of unique values with no identifies or ordering
 * list and map are more common than **set**. all values in a **collection must be the same primitive type**
-```
+``` javascript 
 variable "my_list" {
     type = list(string)
 }
@@ -408,7 +408,7 @@ variable "my_map" {values can be multiple types
 * structural types allow you to create a more complex object where the values can be multiple type values. 
     - object: similar to a map, it is a set of key/value pairs but each can be a different type
     - tuple: similar to a **list**, it is an indexed set of values where each value can be different
-```
+``` javascript 
 Example: of Object
 variable "network_info" {
     type = object (
@@ -433,7 +433,7 @@ variable "pi_tuple" {
 ### Looping and multiple Instances
 * For_each meta-argument takes either a **set** or **map** of **strings** as a value.
 **You may need to convert tuples to sets to ensure the correct data type is submitted to a for_each**
-```
+``` javascript 
 Example: for_each with set
 resource "aws_bucket" "my_buckets" {
     for_each = to_set(["Red", "Green", "Blue"])
@@ -463,7 +463,7 @@ This will loop through the map and for each element (Red, Green, Blue) it will s
 ## 8G Configure Resource using a dynamic block
 * Dynamic blocks are one or more nested blocks.
 * they can be used inside resources, data sources, providers and provisioners
-```
+``` javascript 
 Example
 variable "subnet_data" {
     default = {
