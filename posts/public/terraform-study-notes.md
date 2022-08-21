@@ -116,7 +116,7 @@ terraform {
         }
         azure = {
             source  = "hashicorp/azurerm"
-            version = "~3.0"
+            version = "~>3.0"
         }
     }
 }
@@ -305,7 +305,7 @@ The terraform defines the core workflow in three parts:
 * terraform destroy will delete all the resources and dependencies
 * there is two main arguments:
     * -auto-approve
-    * -target: you can specify a terget and only the target and its dependecies will be deleted. You can have multiple instances of this flag
+    * -target: you can specify a target and only the target and its dependencies will be deleted. You can have multiple instances of this flag
 ---
 # 7 Implement and maintain state
 ## 7B State locking
@@ -326,7 +326,7 @@ The terraform defines the core workflow in three parts:
     * standard - includes state management and possibly locking
     * enhanced - includes remote operations on top of standard features
 * The enhanced backends are either terraform cloud or terraform enterprise
-* with remote backends the state data is never held on disk. It is loaded into memory and then flushed when no longer nedded
+* with remote backends the state data is never held on disk. It is loaded into memory and then flushed when no longer needed
 * remote backends allows for collaboration as multiple people can access the same state file
 * any outputs from a remote state file can be accessed using a data source of `terraform_remote_state `
 ## 7E Describe effect of terraform refresh on state
@@ -371,15 +371,15 @@ The terraform defines the core workflow in three parts:
 * when you invoke a child module the calling module can consime the outputs of the child module.
 * The calling module can consome the outputs of the child module by using a data source
 * the output block can have two addtional arguments in addtion to value and description which is:
-    * sensitive = trure/false
+    * sensitive = true/false
     * depends_on - list of resources it depends on
 * outputs are rendered when you run terraform apply
 ## 8B describe secure secret injection best practise
 * don't store your secrets in .tfvars. terraform has no protections to encrypt or secure variable files. Also the .tfvars file will be in the VCS
 * You can sumbit your variable values using -var argument but this will be in the command history in plain text
-* one of the easiest ways is to use the environmental using using the TF_VARS_<name>. you can configure the environmental variables to pull the data and it will nto show up in the commandline history or terraform
+* one of the easiest ways is to use the environmental using using the TF_VARS_<name>. you can configure the environmental variables to pull the data and it will not show up in the commandline history or terraform
 * The best option is to use a key vault like hashicorp vault
-## 8C understand the use of collectiona nd structural types
+## 8C understand the use of collection and structural types
 ### Primative
 * there are three primative data types in terraform:
     * string
@@ -534,13 +534,15 @@ resource "azurerm_virtual_network" "vnet" {
 ### Terraform System Files
 * terraform.tfstate - Terraform state file (don't check into VCS)
 * terraform.hcl.lock - provider versions and hashes (check into VCS)
-* .terraform/
+* .terraform/terraform.tfstate - defines the remote back-end
 ### User created terraform files
 * README - description of the module and what it should be used for
 * *.tfvars - Key/Value pair of input variables (check into VCS)
+* auto.tfvars - Key/Value pair of input variables (check into VCS)
 * main.tf - Main terraform module (check into VCS)
 * variables.tf - Module Input Variables file(Input Parameters(check into VCS))
 * providers.tf - providers configuration block (check into VCS)
+* version.tf - defines the terraform block with `required_providers` and the `providers` configuration blocks
 * output.tf - module output configuration block (check into VCS)
 
 
