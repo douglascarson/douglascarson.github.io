@@ -1,6 +1,0 @@
-## Conditonal Expression
-Terraform supports conditional expressions in the format like below:
-```
-<CONDITION> ? <TRUE VAL> : <FALSE VAL>
-```
-The *ternary syntax* (?) will evaluate the boolean login in <CONDITION> and if the result is TRUE will return <TRUE VAL> and if FALSE will return <FALSE VAL>
