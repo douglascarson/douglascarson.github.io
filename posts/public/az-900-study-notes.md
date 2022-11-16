@@ -116,6 +116,45 @@ Azure storage account where yoou select ZRS is an example
 * if you haven't created a management group there is a default one called the `tenant root group`. This is automatically created as part of the initial Azure AD deplyment
 ---
 ## 2.2 Describe Azure compute and network services
+### Compute Types
+#### Container Instances
+* container instances refer to an app that runs in a docker container runtime
+* Two services available for container orchestration is Azure Container Instances (ACI) and Azure Kubernetes Service (AKS)
+* ACI is a simplfied way to run a container. You tell it where to get the image (through a docker tag or URL) with some basic config information.
+Azure created the server resources and `you don't pay for the VM but only the cpu and memory your container uses`
+* ACI is best suited for simple apps and a few containers. If you need to scale you should look at AKS
+* When creating an ACI Instance you can't change it's DNS label or the image you pulled. If you want to do this you have to delete and recreate it
+
+#### Virtual Machines
+* VMs are used when you need persistent machine availability
+* With a VM you pay for a VM if it's allocated to you
+* A VM requires an `Azure subscription`, `Custom Management Group` or `Tenant Root group` and `Resource group`
+#### Azure Functions
+* Azure functions is an app service that runs on Azure app services 
+* you only pay for the execution time
+
+#### Availability Sets
+* Availability sets consist of two components:
+    * Update domains
+    * Fault domains
+* fault domains as for unplanned failures (like anti-affinity rules)
+* fault domains are a logical construct describing a single rack in a datacentre
+* If you put two VMs into an availabiility set. You are, in the background creating two fault domains. Azure will place a single VM in a seperate fault domain (Rack)
+* you can have a maximum of `3 fault domains`
+* Update domains are for planned maintenance
+* Update domain is related to the Hyper-V hosts and it will force azure to update the hosts in an organised manner
+* maximum of `20 update domains`
+* you should always seperate your availability sets into tiers. Front-end, middle, backend
+This ensures there is availability for each tier
+in the event of an unexpected rack outage
+#### Availability set disadvantages
+* If you deploy multiple servers into an availability set you have to manually place the servers into that
+* an availability set does not deal with load balancing. It only deals with fault and update domains
+* Not compatible with availability zones
+* to resolve the issues of load balancing and auto scaling Azure introduced `scale sets`
+#### Scale sets
+* scale sets `in` availability sets automatically. You get the benefit of fault and update domains
+* scale sets `are compatible` with availability zones
 
 
 
