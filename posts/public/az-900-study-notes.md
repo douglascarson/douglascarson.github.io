@@ -116,6 +116,7 @@ Azure storage account where yoou select ZRS is an example
 * if you haven't created a management group there is a default one called the `tenant root group`. This is automatically created as part of the initial Azure AD deplyment
 ---
 ## 2.2 Describe Azure compute and network services
+---
 ### Compute Types
 #### Container Instances
 * container instances refer to an app that runs in a docker container runtime
@@ -155,6 +156,105 @@ in the event of an unexpected rack outage
 #### Scale sets
 * scale sets `in` availability sets automatically. You get the benefit of fault and update domains
 * scale sets `are compatible` with availability zones
+
+### Application Hosting Options
+#### Webapps on App Service
+* Webapps run on VMs in the background
+* Basic diagram is Azure LB --> Front-End --> App service Plan
+* Front-end is a software that distributes traffic to the VMs running the webapps
+#### App Service Plan
+There are three tiers available in app service:
+* Free
+    * No cost tier that runs on a shared VM
+* Shared
+    * low cost tier for testing with some addtional features but still using a shared VM
+* Basic, Standard, Premium and Premium v2
+    * Higer cost tiers that run on dedicated VMs
+* The only way to stop being billed for an ASP is to delete it
+* If you are running Basic, Standard, Premium or Premium V2 you can scale out or in
+#### ASP Scaling Limits
+* Basic = Max 3 Instances
+* Standard = Max 10 Instances
+* Premium / Premium V2 = Max 20 Instances
+#### App Service Plans Runtimes
+* Webapps support PHP, .Net, Java application runtimes
+* Webapps support docker
+* webapps support static webapps
+
+Static webapps are webapps that are linked to a code repo and are updated when there is a commit to the repo
+
+#### Azure Kubernetes Service (AKS)
+* Kubernetes creates containers in `pods`
+* A pod is a group of related containers, and containers within a pod share resources
+* A container in one pod cannot share resources with a container in another pod
+* The computer that pods run on are called a `node` or a `worker`
+* The `node` or `worker` has to have the container runtime installed such as containerd or docker
+* All nodes are controlled by a node called the `kubernetes control plane`
+* The entire environment of the kubernetes control plane and nodes is called a kubernetes cluster
+* AKS creates the Kubernetes cluster and control plane for you
+* AKS cluster is free. You only pay for the compute resources you use within you cluster not the management cluster
+#### Azure Spring Cloud
+* Azure Spring Cloud is a PaaS service that to host and run spring apps easily
+* Spring Cloud also integrated with Azure SQL, Azure Storage and other PaaS services
+ ### Virtual Networking
+ #### vNet Peering
+ * To allow vNets to communicate with each other you can use vNet peering
+ * vNet peers travel over Microsofts private backbone
+ * You can peer vNets in the same region
+ * You can use `global vNet peering` to peer vNets across regions
+ * You have to perform vnet peering on both sides
+ * A limitation of global vnet peering is if you have to connect to resources that are behind a `basic tier Azure load balancer` you won't be able to connect to those resources using the public IP. If this is a requirement you have to upgrade the load balancer to a `standard tier`
+ #### Azure DNS
+ * Azure DNS allows you to host Public and Private zones
+ * A public zone contains enteries for the `public endpoints` and private zone contains entries for `private endpoints`
+* When creating a DNS zone. It is be default Public
+* Once you create a private zone you have to `link` the zone to the vNet
+#### Azure VPN Gateway
+* VPN gateway can also be referred to as Virtual Network gateway
+* A VPN Gateway uses two or more VMs inside a `subnet` called the `gateway subnet`
+* There are three connection types supported by VPN Gateway:
+    * vNet-to-vNet
+    * Site-to-site
+    * Point-to-Site
+* A vNet-to-vNet connects `two vnets together`. Each subnet needs a VPN Gateway and they don't have to be in the same Azure Region or subscription
+* When using a vNet-to-vNet VPN Gateway make sure you have scaled the size to ensure you meet the bandwidth requirements. If you need to avoid bandwidth restrictions look at global / vnet peering
+* A site-to-site connection allows you to connect your vnet to an on-prem network
+* site-to-site connections can authenticate using Azure certificate authentication, RADIUS, Azure AD or OpenVPN
+* A point-to-site connection connects your vNet to a single end user device like client laptop, mobile, tablet
+* Azure VPN Gateway has a cap of `1.25 Gbps`
+#### Azure Express Route
+* Express route is a good option when you require more than 1.25Gbps and you don't want to send your traffic over the Internet
+* Express Route can be up to 10Gbps over dedicated fiber connections
+* MS can refer to an Express Route connection as a `circuit`
+* when you connect to Azures network you will be connecting to a `Microsoft Enterprise Edge router (MSEE)`
+* The most common scenario is the customer will connect to a Microsoft Enterprise Edge Router through a service provider or telco
+
+Customer --> Service Provider --> MSEE (Router) --> Azure
+
+* `Express Route Direct` is when you `remove the Service Provider`. This allows you to connect to the physical port on the MSEE Router
+* All express routes are dual paired. If you provision a 5Gbps circuit. MS will provision 2 x 5Gbps links. You can burst for a short time and use more than 5Gbps
+---
+## 2.3 Describe Azure Storage Services
+---
+### Azure Blob Storage
+* Azure blob storage is designed to store data with no defined structure
+* An entity stored in blob storage is referred to as a `blob`
+* There are three types of blobs:
+    * Block Blobs
+    * Append Blobs
+    * Page Blobs
+* Block blobs store files .png, .tiff, .txt
+* Block blobs can have hot, cool and archive tiers
+* Append blobs are loke block blobs but are optimised for append operations. It's good for storing logs.
+You can only have a hot tier for append blobs
+* Page blobs are used to store vhd files
+* Page blobs can only be hot tier
+
+### Azure Disks
+* Azure Disks refer to disks that are used in VMs
+* Azure disks are available in HDD and SSD
+    * Azure SSD standard is for light use
+    * Azure premium SSD for heavy use
 
 
 
