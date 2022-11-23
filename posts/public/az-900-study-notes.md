@@ -255,6 +255,95 @@ You can only have a hot tier for append blobs
 * Azure disks are available in HDD and SSD
     * Azure SSD standard is for light use
     * Azure premium SSD for heavy use
+* You can snapshot the OS or data disk. With the OS disk you can create a VM from the copy
+* A snapshot is a disk copy
+* The amoount of disks a VM can support is determined by the VM type
+
+### Azure Files
+* Azure file shares are backed by Azure Storage
+* You can mount Azure Files on Azure VMs, on-prem windows, linux and MacOS machines
+* Azure Files supports SMB 2.1
+* You can't use windows 7 and windows 2008
+* To have a copy of files on premises and sync it with Azure files you can use an application called `Azure File Sync`
+
+### Azure Queues (Azure Queue Storage)
+* Azure Queue storage is designed for queueing many messages and processing those items
+* Messages in Azure Queues are accessible using a URL and requests are authenticated
+* A message has a default TTL of 7 days but you can customise this
+* After the expiry of the message TTL it is deleted
+
+### Storage Tiers
+* There are several tiers of blob storage:
+    * Hot - frequently accessed and most expensive. 
+    * cool - Less frequently accessed but not as expensive. Must keep the data in for `min 30 days`
+    * archive - Long term storage. Access costs the dearest. Must be kept for a `min 180 days`. Access to the first byte is within 15 hours.
+* If you want data back from the archive tier you have to `rehydrate it to the hot or cool tiers`
+### Storage tier Redundancy Options
+#### Data redundancy
+* The storage account is the underlying resource for all storage services
+* You `cannot change the redundancy option once the storage account has been created`
+* Primary Region Redundancy (Where storage account is created)
+    * Locally Redundant Storage (LRS)
+        * LRS makes three copies within a single datacentre
+        * Least expensive but least redundant
+        * Only protects your data from a disk or rack failure
+    * Zone Redundant Storage (ZRS)
+        * You have three copies of your data in multiple datacentres in a region
+        * protects your data from a single datacentre outage
+        * `doesn't protect against a region failure`
+* Data writes to Azure Storage in LRS and ZRS are synchronous. This means a commit is received once Azure has written all three copies successfully
+* Multi-region redundancy
+    * Geo-redundant Storage
+        * create three copies in a datacentre in the primary region and three copies in a single datacentre in the secondary region
+    * Geo-Zone Redundant Storage
+        * creates three copies in multiple datacentres in the primary region and three copies in multiple datacentres in the secondary region
+        * In the event of a region failure Azure will change the DNS information to point you to the secondary region
+        * If you require read-only access to the data in the secondary region you can select `Make read access to data available in the event of regional unavailability`. This changes the Replication to Read Access Geo-Zone Redundant Storage
+* All writes `within a region are synchronus` and `Inter region is asynchronous`
+#### Storage accounts and Storage Types
+* There are several storage account types and you cannot change this after it has been deployed
+* Storage account Types:
+    * Standard Tier General-purpose V2
+        * This a general purpose tier
+    * Premium Tier Block and append Blobs
+        * This is used when there is a requirement for many transactions
+    * Premium Tier File Shares
+        * Used if you need NFS
+    * Premium Tier Page Blobs
+        Only support Page blobs
+* Premium storage types only support SSD for enhanced performance
+
+## Migrating to Azure
+* To migrate VMs, databases, webapps and VDI to the Azure cloud you can use the Azure Migrate service
+* There are three phases to Azure Migrate:
+    * Discover
+        * You can use a CSV file to disover all the servers, databases etc
+        * You can tell the azure migrate appliance to perform a discovery
+    * Assess
+        * The assessment phase can look at server dependancies and resource consumption
+        * Ypu can also create an expected resource pricing estimate based on the recommended sizings
+    * Migrate
+        * You can replicate data to the cloud
+        * If you have large amounts of data you can use Azure Data Box. Data Box comes in three options:
+            * Data Box Disk
+                * Can only copy data to a single storage account
+                * Max capacity of 35TB
+                * transfers through USB
+            * Data Box
+                * Can copy data across `10` seperate storage accounts
+                * Rugged device containing max 80TB is RAID 5
+                * 2 x 1 Gbps NICs
+                * data is encrypted
+            * Data Box Heavy
+                * Can copy data across `10` seperate storage accounts
+                * Max capacity 770TB
+                * 4 x network cards
+                * 2 x 40 Gbps
+---
+Skill 2.4 Describe Azure Identity, access and security
+---
+
+
 
 
 
