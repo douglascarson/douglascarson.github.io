@@ -342,9 +342,80 @@ You can only have a hot tier for append blobs
 ---
 Skill 2.4 Describe Azure Identity, access and security
 ---
+## Azure AD
+* Azure AD is an Identity source that is created automatically once you create a new subscription
+* It performs `authentication` and `authorisation`
+## Azure Active Directory Domain Services
+* Azure AD DS provides the same services as on-prem MS AD DS such as:
+    * Ability to join domains
+    * GPOs
+    * kerberos
+    * NTLM
+* There are three primary reasons for using Azure AD DS:
+    * Use of older apps that don't support the authentication mechanisms in use today
+    * Integrate Azure resources into your on-premises Windows AD DS
+    * You want to lift-and-shift on-prem applications to the cloud that rely on MS AD DS
+* When you create a domain in MS AD DS it is the equivalent of a domain on-prem
+* MS manages the DCs for you and ensure they are backed up
+* when you create a new domain Azure will create two DCs called a `replica set`
+* `Azure AD Connect` allows you to connect your on-prem AD DS to Azure AD DS. It can also ensure the cloud and on-prem domains are in sync
+* Azure AD DS offers three SKUs:
+    * Standard
+    * Enterprise
+    * Premium
 
+* Standard has a maximum of `25,000` objects and `3000` authentications
+* Standard is designed for a single forest
+* Enterprise has a maximum of `100,000` objects and `10,000` authentications
+* Enterprise allows up to `five` resource forest trusts
+* Premium has a maxium of `500,000` objects and `70,000` authentications
+* Premium allows up to `10` forest trusts
 
-
+## Azure Authenication
+### SSO
+* For a device to work with SSO it must be joined to Azure AD
+* Access to on-prem resources with SSO is accomplished by syncing MS AD DS objects using `azure AD Connect`
+* SSO supports two sign-in methods:
+    * Password Hash Sync
+    * Pass-through authentication
+* Password Hash Sync syncronises a users password has to Azure AD using Azure AD Connect
+* Pass-through auth:
+    1. passes a users login to Azure AD to an on-prem pass-through authenication agent
+    2. The agrnt send the authentication to the on-prem Windows AD DS domain
+    3. Once authenticated Azure AD Connect is used to pass that authentication through to Azure AD
+### MFA
+* MFA is a combination of:
+    * something you know (username/Password)
+    * Something you have (phone/mobile phone)
+    * Something you are (facial recongnition / fingerprint)
+* Azure is 2FA
+* To enable MFA you need to click `per-User MFA` within Azure AD Users
+### Passwordless Authentication
+* passwordless uses multi facor authentication such as:
+    * something they have (device / security key) & something they are (biometrics)
+* there is a passwordless preperation wizard at http://aka.ms/passwordlesswizard
+### External Identities and guest access
+* People who are in your org called called members
+* You can invite people from outside your org and they are called guests
+* When you invite a user from outside your org Azure AD uses a feature called `Azure AD B2B`
+* When you invite a guest user you can specify which `enterprise applications` that can access
+### Azure AD Conditional Access
+* Requires `Azure AD Premium` 
+* Azure AD conditional access allows you to create policies and apply them to users
+* Azure AD conditional access uses `assignments` and `access controls` to configure acess to your resources
+* Assignments define who a policy applies to. It can apply to:
+    * users
+    * groups
+    * roles
+    * guest users
+    * applications
+* Assignments can also define conditions that must be met:
+    * require a certain platfom (android, IOS, windows etc)
+    * specific locations
+    * time of day
+* access conrol detemines how an `access control policy is enforced`
+* You can use access controls to block, enforce a certain device type, 
+### RBAC
 
 
 
