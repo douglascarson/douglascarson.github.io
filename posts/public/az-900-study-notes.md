@@ -416,6 +416,70 @@ Skill 2.4 Describe Azure Identity, access and security
 * access conrol detemines how an `access control policy is enforced`
 * You can use access controls to block, enforce a certain device type, 
 ### RBAC
+* RBAC is the process of authorising users to a system that is based on defined roles
+* There are four elements to RBAC:
+    * Security Principal
+    * Role
+    * Scope
+    * Role assignments
+* Service Principal represents and identity it can be a:
+    * user
+    * group
+    * application (which is called a service principal)
+    * AAD entity called a managed identity. A managed identitiy is how you authorise an azure service to access your azure resoure
+* Role is what defines how the security principle can interact with an azure resource
+* scope defines what level the role is applied
+* Role assignments: roles are defined to security principles at a certain scope
+#### RBAC Generic Built-in Roles
+* Owner: Full access
+* Contributor: create, edit and delete resource but not adjust permissions
+* Reader: Read-Only
+* all other roles are specific to the resource
+* RBAC roles can be scoped to:
+    * management level
+    * Subscription
+    * Resource Group
+    * resource
+* Your RBAC roles are cumulative unless a deny is introduced
+* all RBAC and interactions through API, Portal, cli are through ARM
+
+### Defence-in-Depth Zero Trust
+* MS has developed a defense in depth strategy called `zero trust`
+* zero trust relies on identifying users and uses conditional access to control access to resources
+### MS Defender for cloud
+* Defender for cloud can protect you cloud resource in azure, AWS and GCP
+* Defender for cloud provides insights into four areas:
+    * Security Posture
+    * Regulatory Compliance
+    * Workload protection
+    * Firewall manager
+* Security Posture provides a security score
+* Regulatory Compliance provides high level overview of the compliance for azure resources
+* Workload Protection shows the protection for each of your service types
+* Firewall manager provides insights into the security of your networks in Azure
+---
+# Describe cost management and governance
+## Skill 3.1 Describe cost management in Azure
+### Factors that can affect costs
+* Regions have different pricing based on how expensive it is to run the MS datacentres in that region
+* How you architect the solution can have significant cost differences
+* Long term agreements can be used to reduce costs if you agree to pay up front
+* Azure regions are broken out into four seperate groups for billing purposes. The groups are called `billing zones`. MS costs for egress traffic out of each zone might differ
+### Reduce costs
+* If you are using VMs month over month `azure reservations`
+* Consistent usage of Azure SQL database, Cosmos DB or Azure Synapse Analytics you can use `reserved capacity pricing`. Reserved capacity pricing is like a reservation for VMs
+* Hybrid use benefit where you use your own licensing
+* For workloads that only run for a short time or are disposable you can use spot instances
+### Pricing Calculator and TCO Calculator
+* TCO Calculator is helpful to estimate your expense for new applications in azure
+* When you use the TCO Calc you enter your on-prem:
+    * Servers (Cores/memory)
+    * Storage (space/IOPS/Bandwidth)
+    * Databases
+    * Network (bandwidth)
+### Azure Cost Management & Billing
+* 
+
 
 
 
