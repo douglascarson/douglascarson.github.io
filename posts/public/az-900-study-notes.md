@@ -477,8 +477,75 @@ Skill 2.4 Describe Azure Identity, access and security
     * Storage (space/IOPS/Bandwidth)
     * Databases
     * Network (bandwidth)
-### Azure Cost Management & Billing
-* 
+---
+Skill 3.2 Describe features and tools in azure for governance and compliance
+
+--
+## Azure Blueprints
+* Azure blueprints is a service that can make the deployment of cloud easier and more automated
+* Items in a blueprint are called artifacts
+* Artifacts can be a resource, an ARM template, policy assignment or a role assignment
+* You can save a blueprint to a `subscription` or `management group`
+* a blueprint saved in a `management group` can be used by any subscription within that management group
+* Azure maintains a link between the blueprint and the resources created by that blueprint
+* blueprints are versioned controlled and  can be checked into a VCS
+* You cannot change the name or definition location after creation
+## Azure Policy
+* Azure Policy allows you to define rules that are used when you are creating resources
+* Azure Policy doesn't apply to resources already created unless you run a remediation task
+* There are six supported effects:
+    * Append
+    * Audit
+    * AuditifNotExist
+    * Deny
+    * DeployifNotExists
+    * Disabled
+* Append add addtional properties to a resource. It can b used to add tags
+* Audit logs a warning if the policy is not complied with
+* AuditifNotExists. Allows you to specify an additional resource type that must exist created along with the resource being created or updated
+* Deny Denies the create or update operation
+* DeployIfNotExists. Allows you to specify an additional resource type you want deployed with the resource being created or updated. If that resource type is not included it is automatically deployed
+* Disabled. The policy is not in effect
+## Resource Locks
+* To create a resource lock you must be the `owner` or `User access administrator`
+* locks can be applied at the subscription, resource group or resource level
+* options for resource locks are:
+    * Read-only. This does not allow resource changes
+    * delete. This allows changes
+* locks are inherited
+* The most restrictive wins. So Read-Only will override Delete
+## Service Trust Portal
+* MS have made all the information for tools on trust, security and compliance in a web portal called Service Trust Portal
+* Service trust portal is also where you find links to `compliance manager`
+---
+## Skill 3.3 Describe features and tools for managing and deploying azure resources
+
+---
+## CLI
+* You can list and install extensions to the azure CLI by using the command
+```
+# list extensions
+az extension list-available --output table
+# Install externsions
+az extensions install extension_name
+```
+* You can use the cli in interactive mode by running the command
+```
+az interactive
+```
+
+## Azure Cloud Shell
+* azure cloud shell is a cli environment running from a container within azure
+* a storage account is used to store anything that was installed and settings
+## Azure Arc
+* Azure Arc extends management and governance features of azure to on-prem and other cloud providers
+* It uses one of two methods:
+    * Azure Arc enabled servers
+    * azure Arc enabled Kubernetes
+
+
+
+
 
 
 
