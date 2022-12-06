@@ -542,7 +542,35 @@ az interactive
 * It uses one of two methods:
     * Azure Arc enabled servers
     * azure Arc enabled Kubernetes
+* To use Arc enable-servers you need to install the `Azure Connected Machine Agent`
+* Arc Enabled servers can be windows and linux
+* once the agent is installed it will have a `managed identity` in Azure. You can manage the server with RBAC, Azure Policy, Tags, Protection with Azure Defender for cloud
+* Azure Arc Enabled Kubernetes requires an agent installed
+## Azure Resource Manager and ARM Templates
+* normal flow is Tool --> ARM API --> ARM Service (auth/authorises) --> Resource provider
+* ARM Templates are declaritive and written in JSON
+---
+## Skill 3.4 Describe monitoring tools
+---
 
+## Azure Advisor
+* Azure advisor can notify you on:
+    * cost
+    * Security
+    * Reliability
+    * best practises
+    * performance
+* Advisor can remediate the issue for you
+* You can download the advisor recommendations in pdf and CSV formats
+## Azure Service Health
+* Azure service health shows you:
+    * service issues
+    * planned maintenance
+## Azure Monitor
+* Azure monitor aggregates metrics and alerts and places them into one view
+* Alert rules can have `multiple conditions`
+* When an alert is triggerd it performs an action that is specified in an `alert group`
+* An alert group can alert (email/sms/push/voice) or perform an action
 
 
 
