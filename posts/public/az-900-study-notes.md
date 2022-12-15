@@ -6,11 +6,11 @@
 #### Cloud models
 * The public cloud
     * you use shared infrastructure that is accessible to the public Internet
-    * the network, storage and VMs are provided by the cliud provider
+    * the network, storage and VMs are provided by the cloud provider
     * Easy and fast to move to the cloud
     * you only pay for what you use
 * The private cloud
-    * provate cloud can be hosted on-prem or in a third party hosting provider
+    * private cloud can be hosted on-prem or in a third party hosting provider
     * two of the main reasons people choose the private cloud are privacy and regulatory requirements
     * Operate on a private network accessible to only one organisation
 * The hybrid Cloud
@@ -70,19 +70,19 @@
 ---
 ## 2.1 Describe the core architectural componentd of azure
 ## azure regions, regional pairs and soverign regions
-* a geography boundry is oten a country
+* a geography boundry is often a country
 * each georgraphy is broken into two or more `regions` each of which are hundreds of miles apart
 * MS also operate isolated regions which are government specific
 * within each georgraphy MS has created another logical boundry called a `regional pair`
-* to meet government requiremts about data soverence they have created soverign clouds that are `seperate` from the public cloud
+* to meet government requirements about data soverence they have created soverign clouds that are `seperate` from the public cloud
 * within the azure government soverign cloud there are a subnset of datacentres that are DoD approved and are approved for DoD usage
 ## availability zones
-The fact regions are physically seperated by hundreds of miles protects azure user fromadat loss and application outages caused by disasters in a particulare region
+The fact regions are physically seperated by hundreds of miles protects azure users from data loss and application outages caused by disasters in a particular region
 * To ensure data and apps are available, Azure created `availabilty zones` to safe guard against a building outage in that region
 * there is at least three az's within each region
 * each AZ has seperate cooling, power and networking
 * by deploying into multiple AZ's you can ensure high availability and fault tolerance
-* MS support a 99.99 SLA is you deploy into multiple Az's
+* MS supports a 99.99 SLA if you deploy into multiple Az's
 * there are two categories of services that support az's
     * zonal services
     * zone-redundant services
@@ -245,7 +245,7 @@ Customer --> Service Provider --> MSEE (Router) --> Azure
     * Page Blobs
 * Block blobs store files .png, .tiff, .txt
 * Block blobs can have hot, cool and archive tiers
-* Append blobs are loke block blobs but are optimised for append operations. It's good for storing logs.
+* Append blobs are like block blobs but are optimised for append operations. It's good for storing logs.
 You can only have a hot tier for append blobs
 * Page blobs are used to store vhd files
 * Page blobs can only be hot tier
@@ -345,7 +345,7 @@ Skill 2.4 Describe Azure Identity, access and security
 ## Azure AD
 * Azure AD is an Identity source that is created automatically once you create a new subscription
 * It performs `authentication` and `authorisation`
-## Azure Active Directory Domain Services
+## Azure Active Directory Domain Services (Azure AD Domain Services)
 * Azure AD DS provides the same services as on-prem MS AD DS such as:
     * Ability to join domains
     * GPOs
@@ -571,6 +571,28 @@ az interactive
 * Alert rules can have `multiple conditions`
 * When an alert is triggerd it performs an action that is specified in an `alert group`
 * An alert group can alert (email/sms/push/voice) or perform an action
+
+# Azure Support Plans
+There are several support plans such as:
+    * Basic
+    * Developer (cheapest paid-for support)
+    * Standard
+    * Professional Direct
+    * Premier
+24/7 access to tech support by email and phone is only available with `standard, Professional direct, premier plans`
+* you can submmit support tickets for all support plans
+
+# Cloud adoption framework for Azure
+The stages are:
+
+    * Define strategy
+    * Plan
+    * Ready
+    * Adopt
+    * Govern
+    * Manage
+    * Govern
+
 
 
 
