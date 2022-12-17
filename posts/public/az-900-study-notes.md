@@ -204,6 +204,35 @@ Static webapps are webapps that are linked to a code repo and are updated when t
  * You can use `global vNet peering` to peer vNets across regions
  * You have to perform vnet peering on both sides
  * A limitation of global vnet peering is if you have to connect to resources that are behind a `basic tier Azure load balancer` you won't be able to connect to those resources using the public IP. If this is a requirement you have to upgrade the load balancer to a `standard tier`
+#### Network Security Group
+* you can allow or block traffic send to subnets through NSGs
+* NSGs can use IP address, port, protocol or service tags, app service group, virtual network tag
+* a virtual network service tag means any peered virtual network, express route or VPN
+* You can apply an NSG to to a network card, subnet
+* You can apply `inbound and outbound`
+#### Azure Firewall
+* Fully managed and uses scale sets. You can configure auto scaling
+* Azure Firewall is an Edge Device
+* Protects from L7 to L3
+* when deployed an Azure Firewall Subnet is created. We use `User defined routes` to foce traffic from subnets to go through the azure firewall
+* Understands `application rules`. This means you can categorise rules by URL, FQDN
+* Premium SKU allows for `TLS Inspection`
+* DNAT rules are supported
+#### Azure DDoS
+* There are different DDoS types such as:
+    * Volumetric (lots of traffic to a service)
+    * Protocol (craft packets to take advantage of vulnerability to flood the service)
+    * Application (weakness in application)
+* There are two levels of DDoS SKUs
+    * DDoS Protection Basic
+    * DDoS Protection Standard
+* DDoS Basic provides protection to the core Azure fabric 
+* If you create a standard DDoS Plan tou can `link` it to multiple vNets.
+This will protect the public IPs of resources on those vNets
+* ML is used to tune the DDoS response and normal usgae
+* provides reports about what is happening and metrics
+* provides rapid response
+* you would purchase the plan and this would protect you across `multiple subscriptions and networks`
  #### Azure DNS
  * Azure DNS allows you to host Public and Private zones
  * A public zone contains enteries for the `public endpoints` and private zone contains entries for `private endpoints`
@@ -395,7 +424,7 @@ Skill 2.4 Describe Azure Identity, access and security
     * something they have (device / security key) & something they are (biometrics)
 * there is a passwordless preperation wizard at http://aka.ms/passwordlesswizard
 ### External Identities and guest access
-* People who are in your org called called members
+* People who are in your org are called members
 * You can invite people from outside your org and they are called guests
 * When you invite a user from outside your org Azure AD uses a feature called `Azure AD B2B`
 * When you invite a guest user you can specify which `enterprise applications` that can access
@@ -408,13 +437,16 @@ Skill 2.4 Describe Azure Identity, access and security
     * groups
     * roles
     * guest users
-    * applications
+    * applications the user is accessing
 * Assignments can also define conditions that must be met:
+    * User Risk Profile from Identity protection
     * require a certain platfom (android, IOS, windows etc)
     * specific locations
     * time of day
+    * client apps
+    * device states
 * access conrol detemines how an `access control policy is enforced`
-* You can use access controls to block, enforce a certain device type, 
+* You can use access controls to block, , force MFA, agree to Terms of service, change password or device type 
 ### RBAC
 * RBAC is the process of authorising users to a system that is based on defined roles
 * There are four elements to RBAC:
@@ -445,7 +477,12 @@ Skill 2.4 Describe Azure Identity, access and security
 
 ### Defence-in-Depth Zero Trust
 * MS has developed a defense in depth strategy called `zero trust`
+* The three elements of zero trust are:
+    * verifiy explicitly
+    * Least privilege
+    * Assume breach
 * zero trust relies on identifying users and uses conditional access to control access to resources
+* 
 ### MS Defender for cloud
 * Defender for cloud can protect you cloud resource in azure, AWS and GCP
 * Defender for cloud provides insights into four areas:
@@ -478,9 +515,9 @@ Skill 2.4 Describe Azure Identity, access and security
     * Databases
     * Network (bandwidth)
 ---
-Skill 3.2 Describe features and tools in azure for governance and compliance
+## Skill 3.2 Describe features and tools in azure for governance and compliance
 
---
+---
 ## Azure Blueprints
 * Azure blueprints is a service that can make the deployment of cloud easier and more automated
 * Items in a blueprint are called artifacts
@@ -592,6 +629,32 @@ The stages are:
     * Govern
     * Manage
     * Govern
+Describe privacy and compliance resources
+* Three documents:
+    * MS privacy statement
+        * personal data MS processes
+        * how MS processes it
+        * For what purpose
+    * Online services Terms OST
+        * legal agreement between MS and customer
+        * Outlines obligations and security of customer data and personal data
+    * Data protection Addendum DPA
+        * Defines the data processing and security terms of online services
+        * compliance of laws
+        * security practises
+        * data transferred, retention and deletion
+## Trust Centre
+* Three key components
+    * Security
+    * Privacy
+    * Compliance
+* breaks down MS services into those three elements and gives you details of how MS meet those three elements
+## Azure soverign regions
+* Azure government is for US government or contractors
+* Azure China. This is operated by 21 vanet. not operated by MS. Same features as Azure global but not operated by China
+
+        
+ 
 
 
 
