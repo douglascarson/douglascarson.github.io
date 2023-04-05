@@ -148,5 +148,64 @@
     * Hybrid
         * requires windows 10 or server 2016
         * windows 7, 2012, 2012R2 2008, 2008R2
+### Configure SSPR (Self service password reset)
+* You can deligate users to reset their own passwords. This can we writte back to on-prem as long as you have the correct `license` and Azure AD Connect is configured.
+* Password Change - cloud only account
+    * All versions and all licenses
+* Password reset - Cloud Only
+    * M365 Business Standard
+    * M365 Business Premium
+    * Azure AD Premim P1 & P2
+* Password Change/Unlock/Reset - Hybrid
+    * M365 Business Premium
+    * Azure AD Premim P1 & P2
+* Authentication Methods for SSPR
+    * Mobile App Notification
+    * Mobile App Code
+    * Email
+    * Mobile Phone
+    * office Phone
+    * Security Questions
+* Notification can be configured
+* On-prem Integrations
+    * You can cnfigure the write back configurations within this blade
+    * You have the option to
+        * write passwords back using Azure AD Connect cloud sync
+        * Enable password write back for syncd users
+        * allow users to unlock their accounts without password reset
+# 
+# Skill 1.2 Manage RBAC
+* RBAC allows you to manage the identies or `security principles` that have `access to azure resources` and the `actions` they can perform
+* In Azure RBAC can be applied to users, groups, service principals and managed identities that are applied at a scope
+* within azure there is role inheritance
+* In azure RBAC model is additive. This means the `most privilegdged takes precedence`
+## RBAC Scope
+* There is a scope hierarchy
+    * management group
+        - Subscriptions
+            - Resource Group
+                - Resource
+* to create and remove role assignmnts you need the `Microsoft.Authorisation/role assignments/*` permissions
+* This permission is included in the role `Owner` and `User access addmin`
+## Custom Roles
+* There are three ways to create a custom role:
+    * clone an existing role
+    * JSON file 
+    * start from scratch
+* When creating a role there are two types of actions:  
+    * Actions - Actions are operations an action can perform
+    * Data Actions - actions the can be performed on the data of the resource
+* you can also exclide actions and dat actions by using the `not actions` and `not data actions`
+#
+# Skill 1.3 Manage Subscriptions and Governance
+* A subscription is a billin boundry
+## Azure Policy
+* Azure Policy is a service that is used to:
+    * create, assign and manage policies that enforce governance
+* to implement policy you need to:
+    * authour a definantion
+    * assign it to a scope
+* a policy definition describes your desired behavour at resource creation and update
+* through a policy definition you declare what resources and resource features are considered compliant and what should happen when something isn't compliant 
 
         
