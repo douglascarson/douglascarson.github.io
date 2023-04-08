@@ -206,6 +206,8 @@
     * authour a definantion
     * assign it to a scope
 * a policy definition describes your desired behavour at resource creation and update
-* through a policy definition you declare what resources and resource features are considered compliant and what should happen when something isn't compliant 
+* through a policy definition you declare what resources and resource features are considered compliant and what should happen when something isn't compliant
+* to apply multiple policies you would create an `initative` and assign multiple policies to it
+
 
         
