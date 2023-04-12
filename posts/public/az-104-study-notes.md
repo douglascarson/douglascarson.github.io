@@ -208,6 +208,122 @@
 * a policy definition describes your desired behavour at resource creation and update
 * through a policy definition you declare what resources and resource features are considered compliant and what should happen when something isn't compliant
 * to apply multiple policies you would create an `initative` and assign multiple policies to it
-
-
-        
+* you can scope policy definitions and initiatives to:
+    * Management Groups
+    * Subscriptions
+    * Resource Groups
+* You can `exclude` from scopes. You can exclude:
+    * subscriptions
+    * resource groups
+    * resources
+## Resource Locks
+* There are two types of resource locks:
+    * delete
+    * ReadOnly
+* You can set a resource lock at scope levels:
+    * Subscription
+    * Resource Group
+    * Resource
+## manage Tags
+* Not all resources support tags
+* You can use tag to provide metadata to help billing accounting
+* resources, resource groups and tags are limited to 50 tags
+* tag names can't exceed 512 characters and storage account it is 128
+* tag value can't exceed 128 characters
+* tags are not inherited by child resources
+* tags cannot contain special characters
+* to apply tags you must have write access (contributor and up)
+* You can apply tags through ARM templates, powershell or CLI
+```
+# Create Tags
+# Powershell
+tags = @{Environment="dev"; Application="sap"}
+$resource = get-azresource -name testserver -resourceGroup testRG
+new-aztag -resourceId $resource.Id -tag $tags
+# azure CLI
+az tag create
+```
+* You can also update tags: There are two actions:
+    * merge - updates existing tags and creates new ones if missing
+    * replace - replaces all tags with the new ones
+    * delete - deletes the specified tags from the listed resources
+* to do this you use the -operation switch
+```
+# Update Tags
+tags = @{Environment="dev"; Application="sap"}
+$resource = get-azresource -name testserver -resourceGroup testRG
+update-aztag -resourceId $resource.Id -tag $tags -operation replace
+```
+## Resource Groups
+* You cannot nest resource groups
+* resource for different regions can me in the same resource group
+* resources can only be in `one` resource group
+* a resource group can only be in one region
+* resource groups can be used to as a scoping target for policy and IAM
+### Moving Resources between RGs and Subscriptions
+* Only certain resources can be moved between resource groups and subscriptions
+* to move a resource between subscriptions they have to be using the same `azure ad tenant` 
+`* check as i think that has changed`
+* when moving resource between sbscriptions you need to validate:
+    * the resource provider is available in the destination subscription
+    * the target subscription is not restricted by the quota limits
+    * You cannot move more that 800 resources
+    * If there are any dependant resources all the reources must be in the `same RG and moved all together`
+## Managing Subscriptions
+* Thera are several types of subscriptions:
+    * Free
+    * Pay as you go
+    * VS/MSDN Subscriptions
+    * MS Reseller
+    * CSP
+    * MS Open Licensing
+    * EA
+* some subscrptions have limitations such as:
+    * VS - you have limited regions and no CC associated
+* within Azure there are four foundational roles:
+    * Owner
+    * Contributor
+    * Reader
+    * User Access Administrator
+## Management Groups
+* Management groups allow subscriptions to be organised multi-hierarchial. The benefits are:
+    * Reduce Overhead - You can apply governance at the management group level instead of the subscriptio level, reducing overhead
+    * Enforcement - Apply governance at the mgmt group level which the subscription admins can't change
+    * Reporting
+* Max levels is 6
+## Cost management
+* You can create budgets within cost management
+* budgets are a monitoring mechanism with set budge thresholds and triggers
+* User must have subscription `Read` to see cost data or `Contributor` or higher to see budgets
+* There are also dedicated roles that give users access to cost management `data` called:  
+    * Cost management reader
+    * cost managemnt contributor
+* there are three portal used for subscriptions and cost management:
+    * https://ea.azure.com - Used for EA agreements and managing spend across multiple subscriptions
+    * https://account.azure.com - Used for all subscribtions and accessible by account owners `This is decomissioned and is now in portal.azure.com`
+    * https://portal.azure.com - Used for all subscriptions and includes `Azure Cost Management`
+# Skill 2.1 Secure Storage
+* An azure storage account is an entity used to store azur storage data such as:
+    * blob
+    * table
+    * queue
+    * file
+    * page
+## Storage Firewall
+* The storage firewall allows you to limit access to a storage account from cert IP addresses or ranges
+* Once applied it applies to all services (blob, queue, table)
+* Service endpoints are used to restrict access to `certain subnets within a vNet`. The client is still using the PIP of the storage account
+* Allow Trusted Microsoft Service to access this account is used to allow certain `trusted` sevices access, such as:
+    * Azure Backup
+    * ASR
+    * Azure Networking
+* Service Endpoints provide two benefits:
+    * Restict access to only the subnet within the vNet configured
+    * provide a more efficient route to access the storage account
+* by default read access to anonymous users is blocked
+* blob storage access levels:
+    * Private - Only the storage account `owner` has access to the container and it's blobs. No one else has access
+    * blob - Only blobs within this container can be access anonymously
+    * container - blobs and the container can be accessed anonymously
+* the access level is configured `per container`
+* 
