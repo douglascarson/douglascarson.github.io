@@ -302,6 +302,9 @@ update-aztag -resourceId $resource.Id -tag $tags -operation replace
     * https://ea.azure.com - Used for EA agreements and managing spend across multiple subscriptions
     * https://account.azure.com - Used for all subscribtions and accessible by account owners `This is decomissioned and is now in portal.azure.com`
     * https://portal.azure.com - Used for all subscriptions and includes `Azure Cost Management`
+
+# Types of Storage
+
 # Skill 2.1 Secure Storage
 * An azure storage account is an entity used to store azur storage data such as:
     * blob
@@ -311,6 +314,7 @@ update-aztag -resourceId $resource.Id -tag $tags -operation replace
     * page
 ## Storage Firewall
 * The storage firewall allows you to limit access to a storage account from cert IP addresses or ranges
+* When using the storage firewall you `must` use public IP addresses not private
 * Once applied it applies to all services (blob, queue, table)
 * Service endpoints are used to restrict access to `certain subnets within a vNet`. The client is still using the PIP of the storage account
 * Allow Trusted Microsoft Service to access this account is used to allow certain `trusted` sevices access, such as:
@@ -326,4 +330,180 @@ update-aztag -resourceId $resource.Id -tag $tags -operation replace
     * blob - Only blobs within this container can be access anonymously
     * container - blobs and the container can be accessed anonymously
 * the access level is configured `per container`
-* 
+## Storage Account Performance Tiers
+* Standard
+    * Supports all storage services:
+        * blob
+        * table
+        * file
+        * queues
+        * Unmanaged storage disk
+    * Three possible values for the Standard Tier:
+        * General Purpose V1
+        * General Purpose V2
+        * Blob Storage
+* Premium 
+    * Backed by SSD
+    * Only supports General purpose accounts
+    * Disk Blobs and page blobs
+    * Block Blobs and Append Blobs
+    * Azure Files
+    * Only supports `LRS` replication
+    * There are 4 values for premier Tier:
+        * General Purpose V1
+        * General Purpose V2
+        * BlockBlobStorage
+        * FileStorage
+* Only General Purpose V2 support Hot, Cool and Archive Access Tiers
+* General Purpose V1 can be upgraded to V2 but not back
+
+||General Purpose V2| General Purpose V1| Blob Storage| Block Blob Storage|File Storage| 
+----|--------|---|--|--|--|
+Services Supported| Blob, File, Queue, Table|Blob, File, Queue, Table|Blob (`Block Blobs and Append Blobs Only`)| Blob (`Block Blobs and Append Blobs Only`)| File Only
+Unmanaged Disk (Page Blob)| Yes| Yes| No| No| No
+Supported Perfoamance Tiers| Standard, Premium|Standard, Premium| Standard| Premium | Premium
+Supported Access Tiers| Hot, Cool, Archive| NA|Hot, Cool, Archive| NA|NA
+Replication Options| LRS, ZRS, GRS, RA-GRS, GZRS, RA-GZRS| LRS, GRS, RA-GRS| LRS, RDS, RA-GRS| LRS, ZRS| LRS, ZRS
+* LRS (Local Redundant)
+    * Replicated three times in one datacentre
+    * Protects again server and rack failure
+    * write request to storage happens syncronosly
+* ZRS (Zone Redundant)
+    * Replicates data across `three availability zones in a region` and replicates it three times in each datacentre
+    * The data commit comes back only after all the data has been `synchronosly` across all availability zones
+    * The Archive tier for Blob Storage isn't currently supported for ZRS, GZRS, or RA-GZRS
+* GRS (Geo-Redundant Storage)
+    * Copies you data `three times in a single datacentre` and `asynchronosly to a single datacentre with three copies in the paired region`
+* GZRS (Zone Redundant Geo-Replicated)
+    * Copies your data using ZRS in the primary region
+    * Async copy to a `single datacentre` in the secondary region
+    * provides `three copies in the single datacentre in the secondary region`
+* RA-GRS (Read-access geo-redundant storage)
+    * Primary region has three copies on the data in one AZ
+    * Secondary region has three copies on the data in one AZ
+    * Read-Only Access to data replicated data in the secondary region
+* RA-GZRS (read-access geo-zone-redundant storage)
+    * Read-Only Access to data replicated to a all AZ's in the secondary region
+## Replication RPO
+* Geo-Replication is async replication. The expected maxium RPO is less than 15 minutes, but there is no SLA
+## Access Tiers
+* Hot
+    * Access tier is used to store `frequently accessed` data
+* Cool
+    * storage large amounts of data
+    * data is not accessed for at least `30 days`
+    * SLA lower than the hot tier
+    * Storage costs are lower than hot tier
+    * Access costs are higher than the hot tier
+* Archive
+    * Accessed rarely
+    * several hours of retreival latency
+    * data should remain in the archive tier for at east `180 days`
+    * cheapest storage cost
+    * most expensive access cost
+    * You have to set the archive tier at the `blob level`
+## Shared Access Signature
+* A SAS token is a way to granularly control how a client can access data in an azure storage account
+### Types of shared access signatures
+* Account SAS
+    * delegate access to resources in one or more storage services (blob, tablem queue and file)
+    * you can specify IP whitelists
+    * specify HTTP protocol HTTP/HTTPS
+    * The account sas URI consists of:
+        * URI to the resource
+        * SAS Token
+    * SAS Token consists of:
+        * api-version
+        * SignedVersion (sv) - Specifies the signed storage version
+        * SignedServices (ss) - Specifies the signed services that are accessible
+            * Blob (b)
+            * Table (t)
+            * Queue (q)
+            * File (f)
+        * SignedResourceTypes (str) - Specifies the signed resource types that are accessible
+            * Service (s): Access to `service level` APIs
+            * Container (c): Access to container level APIs such as create/delete container, Table, Queue, list Blobs
+            * Object (o): Access to object-level APIs such as blobs, queue messages, table entries, files
+        * SignedPermissions (sp) - specifies the signed permissions
+            * Read (r): Read permissions for all resource types (service, container, objects)
+            * Write (w): Permits write access for specified resource types. Allows a user to create and update
+            * Delete (d): Permits delete for container and Object not queue
+            * List (l): Valid for `Service and Container resources only`
+            * Add (a): Valid for the following Object resource types only: queue messages, table entities, and append blobs
+            * Create (c): Valid for Container resource types and the following Object resource types: blobs and files
+            * Update (u): Valid for the following Object resource types only: queue messages and table entities
+            * Process (p): Valid for the following Object resource type only: queue messages
+            * Tag (t): Valid for the following Object resource type only: blobs. Permits blob tag operations
+            * Filter (f): Valid for the following Object resource type only: blob. Permits filtering by blob tag
+            * Set Immutability Policy (i): Valid for the following Object resource type only: blob. Permits set/delete immutability policy and legal hold on a blob
+        * SignedStart (st) - Time SAS Token is valid from
+        * SignedExpiry (se) - Time tocken become invalid
+        * SignedIP (sip) - IP range the token can come from
+        * SignedProtocol (spr) - details if communication can be http, https or http/https
+        * Signed EncryptionScope (ses) - EncryptionScope
+        * Signature (sig) - Signature
+* Authorising Access to Blobs using Azure AD
+    * Using Azure AD is only supported on `blob and queue` storage
+    * If an application is running from an azure resource you can use a managed identity
+    * To use Azure AD to authorise the access to blob storage the service needs to return an oData token
+    * There are two client libraries to acquire a token:
+        * Azure Identity Client Library
+        * MS Authentication Library (MSAL)
+    * You can assign Azure RBAC permissions at two levels;
+        * Storage Account level
+        * Container
+        * Queue
+    * The RBAC roles you can use to access the data component are:
+        * Storage Blob Data Owner
+        * Storage Blob Data Contributor
+        * Storage Blob Data Reader
+        * Storage Queue Data Contributor
+        * Storage Queue Data Reader
+        * Storage Queue Data Message Processor
+        * Storage Queue Data Message Sender
+### Stored Access Policy
+* You can create a stored access policy only on the `container`
+    * You can specify:
+        * Identifier
+        * Permissions (list, Read, Add, Create, Write, Delete)
+    * Start and End Time
+* You can have a max of `5` access policies
+* You refernce the access policy when creating a SAS token using cli or storage explorer
+### Access keys
+* With an access key to a storage account you have full rights over data in all services
+* As there is two access keys you can roll the keys without issues
+* rolling a storage account access key will `invalidate any sas tokens that were generated using that key`
+# Azure Files
+* Standard file shares support LRS, ZRS, GRS and GZRS
+* Premium shares support LRS and ZRS
+## Configuring Access to Files
+* Azure files allows two types of identity based authentication to access shares:
+    * On-Prem AD DS
+    * Azure AD DS
+    * Azure AD Kerberos for hybrid user identities
+* Azure files uses `kerberos` tokens to authenticate users
+### On-prem AD DS authentication and authirisation to Azure Files
+* You need to sync identites from on-prem to Azure AD with AD connect
+* To register the Azure Storage account with your on-prem AD DS. There are two ways to do this:
+    * Run the AzFilesHybrid powershell module
+    * Manually
+#### Share level Permissions
+* Share-level permissions on Azure file shares are configured for Azure Active Directory (Azure AD) users, groups, or service principals
+* directory and file-level permissions are enforced using Windows access control lists (ACLs)
+* There are a number of Azure AD Built in roles:
+    * Storage File Data SMB Share Reader - RO over SMB Shares
+    * Storage File Data SMB Share Contributor - RO/RW and delete over Azure Storage File Shares over SMB
+    * Storage File Data SMB Share Elevated Contributor - RO/RW/Delete and modify NTFS over Azure Storage File Shares over SMB
+* T apply superuser ACLs on the directories and files you need to mount a drive using your `storage accounts key` from a domain joined machine
+```
+net use <drive letter>:\\storage-account.file.core.windows.net\fileshare /user:azure\<storage account name> <storage account key>
+```
+* You can use file explorer or icacls to grant permissions to all directories and fies under the file share
+---
+# Skill 2.2 manage storge
+
+If you dataset is large you can sip your data and import it into azure using the `Azure Import/Export` service.
+* Azure import/export service is only used with blob storage and aure files
+## Azure Export
+* An Azure Export Job is a job that allows yout o ship a large volume of data from Azure Storage to your on-prem environment by shipping hard disks
+* Only supports export of blobs
