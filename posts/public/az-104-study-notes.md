@@ -630,7 +630,14 @@ Some of the functions of Azure File Sync are:
 * Soft Delete allows you to save and recover your data when `blobs` or `blob snapshots` are deleted
 * feature has to enabled on the `storage account` and a `retention period must be set for how long the deleted data is retained`
 * Maximum retention is `365 days`
-* 
+#### Storage tiers
+* three tiers are supported
+     * Hot
+     * cool
+     * archive
+* Data in the archive tier is stored offline and must be rehydrated to a hot or cool tier. This can take up to `15 hours`
+* changing the acces tier can change at the `account` or `blob` level
+* You can use `lifecycle manager` to manage tier based on last access time
 
 
 
