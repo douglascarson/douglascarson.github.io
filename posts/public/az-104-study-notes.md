@@ -305,14 +305,14 @@ update-aztag -resourceId $resource.Id -tag $tags -operation replace
 
 # Types of Storage
 
-# Skill 2.1 Secure Storage
+## Skill 2.1 Secure Storage
 * An azure storage account is an entity used to store azur storage data such as:
     * blob
     * table
     * queue
     * file
     * page
-## Storage Firewall
+### Storage Firewall
 * The storage firewall allows you to limit access to a storage account from cert IP addresses or ranges
 * When using the storage firewall you `must` use public IP addresses not private
 * Once applied it applies to all services (blob, queue, table)
@@ -330,7 +330,7 @@ update-aztag -resourceId $resource.Id -tag $tags -operation replace
     * blob - Only blobs within this container can be access anonymously
     * container - blobs and the container can be accessed anonymously
 * the access level is configured `per container`
-## Storage Account Performance Tiers
+### Storage Account Performance Tiers
 * Standard
     * Supports all storage services:
         * blob
@@ -384,7 +384,7 @@ Replication Options| LRS, ZRS, GRS, RA-GRS, GZRS, RA-GZRS| LRS, GRS, RA-GRS| LRS
     * Read-Only Access to data replicated data in the secondary region
 * RA-GZRS (read-access geo-zone-redundant storage)
     * Read-Only Access to data replicated to a all AZ's in the secondary region
-## Replication RPO
+### Replication RPO
 * Geo-Replication is async replication. The expected maxium RPO is less than 15 minutes, but there is no SLA
 ## Access Tiers
 * Hot
@@ -402,9 +402,9 @@ Replication Options| LRS, ZRS, GRS, RA-GRS, GZRS, RA-GZRS| LRS, GRS, RA-GRS| LRS
     * cheapest storage cost
     * most expensive access cost
     * You have to set the archive tier at the `blob level`
-## Shared Access Signature
+### Shared Access Signature
 * A SAS token is a way to granularly control how a client can access data in an azure storage account
-### Types of shared access signatures
+#### Types of shared access signatures
 * Account SAS
     * delegate access to resources in one or more storage services (blob, tablem queue and file)
     * you can specify IP whitelists
@@ -473,10 +473,10 @@ Replication Options| LRS, ZRS, GRS, RA-GRS, GZRS, RA-GZRS| LRS, GRS, RA-GRS| LRS
 * With an access key to a storage account you have full rights over data in all services
 * As there is two access keys you can roll the keys without issues
 * rolling a storage account access key will `invalidate any sas tokens that were generated using that key`
-# Azure Files
+### Azure Files
 * Standard file shares support LRS, ZRS, GRS and GZRS
 * Premium shares support LRS and ZRS
-## Configuring Access to Files
+### Configuring Access to Files
 * Azure files allows two types of identity based authentication to access shares:
     * On-Prem AD DS
     * Azure AD DS
@@ -500,10 +500,139 @@ net use <drive letter>:\\storage-account.file.core.windows.net\fileshare /user:a
 ```
 * You can use file explorer or icacls to grant permissions to all directories and fies under the file share
 ---
-# Skill 2.2 manage storge
+## Skill 2.2 manage storge
 
 If you dataset is large you can sip your data and import it into azure using the `Azure Import/Export` service.
 * Azure import/export service is only used with blob storage and aure files
-## Azure Export
+### Azure Export
 * An Azure Export Job is a job that allows yout o ship a large volume of data from Azure Storage to your on-prem environment by shipping hard disks
 * Only supports export of blobs
+### Azure Import Job
+* You can crete an import job and ship data on disk to Azure
+* all storage accounts are supported
+* Azure files is only supported performing an `import job`
+1. The first step is to install the Azure Import/Export tool called `WAImportExport`
+* There are two vrsions of this tool:
+    * WAImportExporttool v1 - Azure Blob
+    * WAImportExporttool v2 - Azure Files
+* There are some pre-requisites for using the WAImportExport Tool
+    * Win 7 or Win 2008 upward
+    * .Net 4 upward
+    * Storage Account Key
+    * Bitlocker `must be enabled on the machine you are running the tool on`
+2. Run the drive preperation tool as below:
+```
+waimportExpot.exe prepimport /j:<journalFile> /id:<session ID> /logdir:<LogDir> /sk:<destinantion storage account key> /InitialDriveSet: <driveset> /DataSet:<DataSet>
+```
+3. Go to the destinantion Storage Account
+    * Create an Import Job within Azure and select `Import into Azure`
+    * Job Details - Choose the journal file created with WAImportExport Tool
+    * Select Destinantio Storage
+    * Specify the return address
+### Install and Use Storage Explorer
+* Storage Explorer supports:
+    * Blob
+    * Tables
+    * Queue
+    * Files
+    * CosmosDB
+    * Data Lake
+* Storage explorers authentication mechanisms:
+    * Add an Azure Account
+    * Connection String - Can get this from `Access Keys`
+    * Use a Shared Access Signature
+    * A storage Account Name and Key - can get this from `Access keys`
+    * Attach a local emulator
+### AzCopy
+* AzCopy is the cli version of storage explorer
+* You need to authenticate before copying any data. You can do this by using the ` azcopy login ` command
+* Supported logins are:
+    * service principle
+    * SAS token
+    * access key
+    * managed Identity
+* AzCopy can also be used to copy between storage accounts
+```
+azcopy copy "https://examref.blob.core.windows.net/ srccontainer/[blob-path]?<sas token>" "https://examrefdest.blob.core.windows.net/destcontainer/[blob-path]?<sas token>"
+```
+* AzCopy v10 is multiplatform it supports windows, linux MacOS
+* You can use AzCopy to sync between two containers
+```
+azcopy sync "https://examref.blob.core.windows.net/ srccontainer/[blob-path]?<sas token>" "https://examrefdest.blob.core.windows.net/destcontainer/[blob-path]?<sas token>"
+```
+### Storage Account Replication
+* You can move a storage account between LRS, GRS and RA-GRS freely
+* To move to and from ZRS, GZRS and RS-GZRS you are better to:
+    * AzCopy 
+    * Raise a support request to live migrate data through a request to MS Support
+### Blob Object Replication
+* You can configure blob replication between two storage accounts. A pre-requisite is to enable:
+    * must be general-purpose v2 or premium block 
+    * version control on both storage accounts
+    * `blob change feed` on the `source`
+* The replication is `async`
+* you can place `prefix filters` on the replication rule to select certain folders and files
+* You can filter to:
+    * replicate everything
+    * only new objects
+    * custom - objects created from a certain time
+* To see the blob replication status you can go to the source blob and go to properties
+* The source account can have a `maxium of two destination accounts`
+* The destination account is `Read-Only`
+---
+## Skill 2.3 Configure Azure Files and Blob Storage
+* Azure Files is a service that supports SMB shares
+* Max default share size is 5TiB
+* Max default share size with large file support is 100 TiB
+* Max premium share size is 100 TiB
+* Azure files supports SMB 3.0
+### Create and Configure File Sync
+Azure File Sync is a service that allows you to cache several Azure file shares on an on-premises Windows Server or cloud VM
+Some of the functions of Azure File Sync are:
+* Multi-site - Ability to write files across windows and azure files
+* Cloud Triering
+* Azure Backup Intergration
+* Fast DR - Restore file metadata and recall immediately
+* zure file shares can be used in two ways: by directly mounting these serverless Azure file shares (SMB) or by caching Azure file shares on-premises using Azure File Sync
+#### Azure Sync Management Components
+* **Azure File Share**: provides a `cloud endpoint`
+* **Server Endpoint**: The path on the Windows Server that is being synced to an Azure file share. This can be a specific folder on a volume or the root of the volume. Multiple server endpoints can exist on the same volume if their namespaces do not overlap
+* **Sync Group**: The object that defines the sync relationship between a cloud endpoint, or Azure file share, and a server endpoint
+##### Azure Sync Deployment Steps
+* Pre-requisites for Azure Sync Deployment:
+    * Azure Files created with storage account
+    * Server with the Azure File Sync agent
+1. Create a Azure File Sync Resource
+    * Choose the name and resource group
+2. Register a server
+3. Create Azure Sync Group
+    * This configures:
+        * Sync Group Name
+        * 1st cloud endpoint
+        * storage account
+        * Azure File Share
+### Configure Blob Storage
+* Blob Types:
+    * Page Blobs:
+        * Optimised for random IO and VHD files
+    * Block Blobs
+        * optimised for `efficient uploads and downloads`for video, images and general files
+        * Append Blobs
+            * like block blobs but are optimised for append operations. Good for logs
+* Once you have set the type of blob you `cannot change it`. If you uploaded a .vhd as a block blob you have to delete it and uplad as a page blob
+* when uploading a file to blob storage you can select:
+    * blob type from block, page and append
+    * block size 4MiB to 100MiB
+    * Access Tier: Hot, cool, archive
+    * Encryption Scope
+    * Retention Policy: You need to enable `version imunity at the container level`
+#### Soft Delete
+* Soft Delete allows you to save and recover your data when `blobs` or `blob snapshots` are deleted
+* feature has to enabled on the `storage account` and a `retention period must be set for how long the deleted data is retained`
+* Maximum retention is `365 days`
+* 
+
+
+
+
+
