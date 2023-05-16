@@ -638,6 +638,109 @@ Some of the functions of Azure File Sync are:
 * Data in the archive tier is stored offline and must be rehydrated to a hot or cool tier. This can take up to `15 hours`
 * changing the acces tier can change at the `account` or `blob` level
 * You can use `lifecycle manager` to manage tier based on last access time
+# Chapter 3 - Deploy nd Manage Compute Resources
+## ARM Template Overview
+* ARM Templates are JSON files.
+The basic structure of the JSON Template is:
+```json
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "variables": {},
+    "functions": [],
+    "resources": [],
+    "outputs": {}
+}
+```
+* Schema
+    * For resource group target deployments use `/deploymentTemplate.json#`
+    * for subscription target deployments use `/subscriptionDeploymentTemplate.json#`
+* ContentVersion
+    * This is your version control
+    * You can reference this version in other templates to ensure you are deploying from the correct version of template
+* parameters
+    * Parameters passd at runtime
+    * you can also use the file `azuredeploy.parameters.json` to pass parameters
+* Variables
+    * defines values used in the template
+    * variables can be hard-coded or dynamically generated
+* functions
+    * Can be used to create functions that are used in the template
+* resources
+    * contains the resources that are created or updated
+    * you can define conditions on when to create a resource
+    * dependsOn is used to determine hierarchy and flow during resource creation
+* outputs
+    * define data outputs that are returned as part of the deployment
+### ARM Deployment Modes
+* There is two deployment modes:
+    * Incremental - This updtes any changes but does not delete any resorces that have been manually created
+    * Complete - This deletes resources that exist in the resource group that are not in the template
+* to select the deployment mode you use the `-deploymentmode` parameter in the new-azresourceGroupDeployment cmdlet
+#### Deploy from Template
+* There are three ways to deploy from template:
+    * Portal
+    * CLI
+    * REST API
+* Portal
+    1. Create a resource
+    2. Select `template deployment`
+    * You can choose to deploy from a common template, samples or upload a template
+* CLI
+    * with powershell you would use the `new-azResourceGroupDeployment` cmdlet
+    ```powershell
+    new-azResourceGroupDeployment -TemplateParametersObject or -TemplateParametersFile or -TemplateParametersUri https://*.json
+    ```
+* You can export a configuration from existing resources. This can be used to redeploy is analyse how the resource was deployed
+
+## VM Extensions
+* To use the custom script extension your script has to be available through a URI. Be it a storage account or GitHub. 
+* The URI has to allow anonymous access to pass a SAS key
+* extension v1.10 and later supports `managed identities` for downloading friles from URLs. You cannot use a managed identity with a `storage account` or `storageAccountKey`
+* The custom script runs under the `LocalSystem` account
+### Troubleshoot VM Extension Failures
+* You can find the logs in windows `c:\windowsAzure\Logs\Plugins\Microsoft.Compute`
+* Logs for Linux are located `/var/libwaagent/Microsoft.OSTCExtensions.CustomScriptForLinux-<version>/download/1`
+## Skill 3.2 Configure VMs for HA and Scalability
+### Availability Zones
+* There is a minimum of three AZ's per region (where applicable)
+* using AZ's gives a `99.99` uptime SLA
+* When you create VMs in three AZ's, those will automatically be distributed across `fault domains`
+* Availability Zones are deivided into:
+    * Zonal Services - A resource can be deployed to a specific (self selected) AZ to achieve more `strigent latency`. Resilience is `self-architected` by replicating apps and data to one or more zones in the region. Example: VM, App services
+    * Zone-redundant - Resources are replicated to distributed `across zones automatically`. Example: Azure SQL, ZRS Storage Account
+    * Always-Available Services - Always available across all Azure geographies and are resilient to zone-wide outages and region-wide outages. Example: Azure AD
+### Availability Set
+* Availability sets consist of two components:
+    * Update domains
+    * Fault domains
+* fault domains as for unplanned failures (like anti-affinity rules)
+* fault domains are a logical construct describing a single rack in a datacentre
+* If you put two VMs into an availabiility set. You are, in the background creating two fault domains. Azure will place a single VM in a seperate fault domain (Rack)
+* you can have a maximum of `3 fault domains`
+* Update domains are for planned maintenance
+* Update domain is related to the Hyper-V hosts and it will force azure to update the hosts in an organised manner
+* maximum of `20 update domains`
+* you should always seperate your availability sets into tiers. Front-end, middle, backend
+This ensures there is availability for each tier
+in the event of an unexpected rack outage
+#### Availability set disadvantages
+* If you deploy multiple servers into an availability set you have to manually place the servers into that
+* an availability set does not deal with load balancing. It only deals with fault and update domains
+* Not compatible with availability zones
+* to resolve the issues of load balancing and auto scaling Azure introduced `scale sets`
+#### Scale sets
+* scale sets `in` availability sets automatically. You get the benefit of fault and update domains
+* scale sets `are compatible` with availability zones
+
+#### Create Availability Set
+`It's recommended to use VM Scale Sets with flexible orchestration mode for high availability. Virtual machine scale sets allow VM instances to be centrally managed, configured, and updated, and will automatically increase or decrease the number of VM instances in response to demand or a defined schedule. Availability sets only offer high availability.`
+* There are two ways to create an availability Set:
+    1. While creating a VM select to create an availability set from the `basics` tab
+    2. Create a resource called `availability sets`
+### Deploy and configure Scale Sets
+
 
 
 
