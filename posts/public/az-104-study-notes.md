@@ -740,6 +740,34 @@ in the event of an unexpected rack outage
     1. While creating a VM select to create an availability set from the `basics` tab
     2. Create a resource called `availability sets`
 ### Deploy and configure Scale Sets
+#### Scale Set Orchestration
+* Scale set orchestration modes allo yu to have greater control over how VMs are managed by a scale set
+* The orchestration mode is defined when you create the scale set and `cannot be changed or updated later`
+* Uniform Orchestration (legacy)
+    * Optimised for `large-scale stateless workloads` where the instances are identical
+    * VM Instances are deployed from a `profile` or `template`
+    * have to be the same type of VM, SKU, OS
+    * Access to VM Instance API is limited to a subset of APIs mostly throught he scale set
+    * Uniform provides `fault domain` HA guarentees when configured with `fewer than 100 instances`
+    * Supports VMSS management, orchestration, monitoring, scaling and OS upgrades
+* Flexible (new)
+    * Best used for `quorum based`, `open-source databases`, `stateful apps` workloads
+    * During VMSS Flex creation you don't have to create the VMSS with a profile. You have to create the VM and then `add` the VM into the scale set manually.
+    * You have full access to the per instance VM IaaS API instead of the restricted API. This means you can use Azure Backup, ASR for the instances
+    * Most SKUs are supported. Speciality SKUs are not supported
+    * Can only have `1 profile per VMSS Flex` instance
+    * can mix different VMs, Spot, OS, SKUs into the VMSS Flex
+    * Up to `1000` VMs in VMSS Flex
+#### Scaling Profile
+* VMSS allows you to define  scaling profile or template, which specifies the properties of the VM Instance which include.
+    * VM Image
+    * Admin credentials
+    * Network Interface settings
+    * Load Balancer Back-end Pool
+    * OS and Data disk settings
+* When you increase the instance count it will create VMs based on the `profile`
+* Scale Sets with a profile are `uniform`
+
 
 
 
