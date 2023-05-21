@@ -46,7 +46,9 @@
 * Free comes with all sign ups
 * Premium comes with an `Enterprie Agreement`, `Open Volume License Program`, and the `Cloud Solution Providers`
 ### AzureAD Free
-* User & roup Management
+* User & Group Management
+* Protect Azure AD tenant admin accounts with MFA
+* Mobile app as a second factor
 * On-prem directory sync through AzureAD Connect
 * Basic Reports
 * SSO
@@ -58,18 +60,23 @@
 * Group Access Management
 * Self Service Password reset for cloud users
 ### AzureAD Premium P1
+* Cost per user. cost is approx $9 per month per user
 * Free + Access to on-prem and cloud resources
+* `conditional access`
 * Dynamic Groups
 * Self Service group management
 * Cloud write back capabilities
 * Includes `Identity Manager`
-* on-prem identity and managemnt suite
+* on-prem identity and management suite
 * The extra features in P1 allow self-service password reset for your on-premises users
+* Trusted IPs
 ### AzureAD Premium P2
 * Free + P1
-* Azure AD Identity Protection to help provide risk-based Conditional Access
-* PIM
-## AZureAD SelfServie Password Reset
+* cost is $12 per user per month
+* Azure AD Identity Protection to help provide `risk-based Conditional Access`
+* PIM (protect admin accounts and JIT)
+* Access Reviews
+## AzureAD Self Service Password Reset
 * Global Admin account can always SSPR
 * SSPR uses a `security group` to limit the users who have SSPR enabled
 * All users in the org must have a valid license for SSPR
