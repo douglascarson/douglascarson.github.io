@@ -114,6 +114,7 @@
 * Disabling the device only prevents the user from accessing resources `from that device`
 ### Bulk user updates
 * you can create, update and delete users in bulk
+* you can add members to groups in bulk
 * you can download a csv and populate the csv with what ever info is required
 * mandatory fields are:
     * Name
@@ -180,12 +181,18 @@
         * write passwords back using Azure AD Connect cloud sync
         * Enable password write back for syncd users
         * allow users to unlock their accounts without password reset
-# 
+### Administrative Units
+*  determines what admin users can work with what parts of the organisation.
 # Skill 1.2 Manage RBAC
 * RBAC allows you to manage the identies or `security principles` that have `access to azure resources` and the `actions` they can perform
 * In Azure RBAC can be applied to users, groups, service principals and managed identities that are applied at a scope
 * within azure there is role inheritance
-* In azure RBAC model is additive. This means the `most privilegdged takes precedence`
+* In azure RBAC model is additive. This means the `most privileged takes precedence`
+### RBAC Default Roles
+* Owner
+* Reader
+* contributor
+
 ## RBAC Scope
 * There is a scope hierarchy
     * management group
@@ -202,10 +209,10 @@
 * When creating a role there are two types of actions:  
     * Actions - Actions are operations an action can perform
     * Data Actions - actions the can be performed on the data of the resource
-* you can also exclide actions and dat actions by using the `not actions` and `not data actions`
+* you can also exclude actions and data actions by using the `not actions` and `not data actions`
 #
 # Skill 1.3 Manage Subscriptions and Governance
-* A subscription is a billin boundry
+* A subscription is a billing boundry
 ## Azure Policy
 * Azure Policy is a service that is used to:
     * create, assign and manage policies that enforce governance
@@ -476,6 +483,7 @@ Replication Options| LRS, ZRS, GRS, RA-GRS, GZRS, RA-GZRS| LRS, GRS, RA-GRS| LRS
     * Start and End Time
 * You can have a max of `5` access policies
 * You refernce the access policy when creating a SAS token using cli or storage explorer
+* To revoke the sas keys linked to the Storaged Access Policy you would delete the policy
 ### Access keys
 * With an access key to a storage account you have full rights over data in all services
 * As there is two access keys you can roll the keys without issues
@@ -643,9 +651,19 @@ Some of the functions of Azure File Sync are:
      * cool
      * archive
 * Data in the archive tier is stored offline and must be rehydrated to a hot or cool tier. This can take up to `15 hours`
-* changing the acces tier can change at the `account` or `blob` level
-* You can use `lifecycle manager` to manage tier based on last access time
-# Chapter 3 - Deploy nd Manage Compute Resources
+* changing the acces tier can change at the `account`
+### Monitoring /Log Analytics
+* you can configure the storage account to send logs to:
+    * log analytics (azure Monitor)
+    * storage account
+    * Azure event Hub
+    * partner solution
+### Lifecycle Manager
+* move blobs between tiers using:
+    * date accessed
+    * created
+* you can move blobs from hot to cool to archive or delete
+# Chapter 3 - Deploy and Manage Compute Resources
 ## ARM Template Overview
 * ARM Templates are JSON files.
 The basic structure of the JSON Template is:
@@ -774,6 +792,118 @@ in the event of an unexpected rack outage
     * OS and Data disk settings
 * When you increase the instance count it will create VMs based on the `profile`
 * Scale Sets with a profile are `uniform`
+
+## Skill 3.3 Configure VMs
+When creating a VM there are several options to choose from sych as:
+* Basics
+    * Subscription
+    * Resource Group
+    * VM Name
+    * Region
+    * Availability options:
+        * VM Scale Set
+        * Availability Zone
+        * Availability Set
+    * Security Type
+        * Standard
+        * Trusted launch VM (Virtual Trusted Execution - recommended)
+        * Confidential VM (Hardware Trusted Execution)
+* VM architecture
+    * x64
+    * arm64
+* Run spot - used for jobs that can be restarted and low priority jobs
+* Size
+* username
+* Password
+* Public Inbound Ports
+    * None
+    * selected ports
+* Disks
+    * OS Disk
+        * Disk Type
+            * premium SSD LRS
+            * Standard SSD LRS
+            * Standard HDD LRS
+            * Premium SSD ZRS
+            * Standard SSD ZRS
+    * Key Management
+        * Platform Managed
+        * Customer Managed
+        * Platform and Customer Managed Keys
+    * Ultra Disk Compatible - Used for very high IO
+* Networking
+    * vNet
+    * Subnet
+    * Public IP
+    * NIC NSG
+    * Accelarated networking - low latency on the NIC
+    * Load Balancing
+* Management
+    * Enable systems assigned managed identity
+    * Azure AD - Login with Azure AD
+    * Auto Shutdown
+    * Backup
+    * Guest OS Updates:
+        * hotpatch
+        * Patch orchestration options:
+            * azure orchestrated (managed patching across availability sets)
+            * windows update
+            * Manual
+            * Image default
+        * Reboot setting:
+            * always
+            * if required
+            * never
+* Monitoing
+    * Alerts - enable common alerts for a VM
+    * Boot diag
+    * Enable OS Guest diagnostics - save metrics of VM to storage account
+* Advanced
+    * extension
+    * application to install
+    * custom data:
+        * you can pass data into the VM to be used for installing
+    * User Data
+        * Pass a script, configuration file, or other data that will be accessible to your applications throughout the lifetime of the virtual machine
+    * NVMe
+        * higher IOPS and throughput
+        * Gen v2, v3 and v4 supports SCSI only. Gen v5 supports SCSI and NVMe
+        * The NVMe enabled `Ebsv5` series is designed to offer the highest Azure `managed disk` storage performance while the L series VMs are designed to offer higher IOPS and throughout on the local NVMe disks which are `ephemeral`
+    * Dedicated Host
+    * capacity Reservaions - reserve a VM SKU ahead of time to ensure you get the capacity
+    * Proximity placement group - place VMs as lose together in the same `region`
+* Tags
+* Review
+#### Enable Encryption on VM Diks
+There are various ways to encrypt disks such as:
+* Azure Disk Server-Side Encryption
+    * Data at rest encrypted
+    * It doesn't encrypt temp or disk caches
+* Encryption at host
+    * Enchances Azure Server Side Encryption and encypts temp and cache disks at rest
+* Azure Disk Encrypton
+    * You can enable encyption on either:
+        * OS Disk
+        * OS & Data Disks
+    * To bring your own keys you need to deply key vault `premium` and configure it to allow `Azure Disk Encryption` ADE
+    * Disk encryption for Windows uses bitlocker and Linux it uses DM-Crypt
+* Confidential Disk Encryption
+    * Binds disk encryption keys to the virtual machines TPM and makes the protected disk content accessible only to the VM
+#### VM Networking
+* accelarated networking is SR-IOV. This bypasses the hyper-v vSwitch
+* SR-IOV is only supported on select VM SKUs such as general D servies with more than 2 x vCPUs
+* Only suported on 2012 R2 and up
+* If there are more than one vNICs on a VM the first one is designated the `primary` NIC
+* You can control which network interface you send outbound traffic to. However, a VM by default sends all outbound traffic to the IP address that's assigned to the primary IP configuration of the primary network interface
+#### Redeploy VM
+* When you redploy a VM this stops it and allocates it to anoter Hyper-v host
+### Azure Bastion
+* Bastion server has to be in the same region as the destination VMs
+* The bastion service will create a VMSS and will want to created a dedicated vNet and subnet. The subnet `must` be named `AzureBasionSubnet` and it must be a `/26`
+* You can peer the Bastion vNet with other subnets to access the VNs
+* 
+
+
 
 
 
