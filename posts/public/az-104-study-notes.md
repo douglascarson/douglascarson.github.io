@@ -238,7 +238,7 @@
     * Subscription
     * Resource Group
     * Resource
-## manage Tags
+## Manage Tags
 * Not all resources support tags
 * You can use tag to provide metadata to help billing accounting
 * resources, resource groups and tags are limited to 50 tags
@@ -764,7 +764,7 @@ in the event of an unexpected rack outage
 * There are two ways to create an availability Set:
     1. While creating a VM select to create an availability set from the `basics` tab
     2. Create a resource called `availability sets`
-### Deploy and configure Scale Sets
+### Deploy and configure VM Scale Sets VMSS
 #### Scale Set Orchestration
 * Scale set orchestration modes allo yu to have greater control over how VMs are managed by a scale set
 * The orchestration mode is defined when you create the scale set and `cannot be changed or updated later`
@@ -775,6 +775,7 @@ in the event of an unexpected rack outage
     * Access to VM Instance API is limited to a subset of APIs mostly throught he scale set
     * Uniform provides `fault domain` HA guarentees when configured with `fewer than 100 instances`
     * Supports VMSS management, orchestration, monitoring, scaling and OS upgrades
+    * supports spot instances
 * Flexible (new)
     * Best used for `quorum based`, `open-source databases`, `stateful apps` workloads
     * During VMSS Flex creation you don't have to create the VMSS with a profile. You have to create the VM and then `add` the VM into the scale set manually.
@@ -783,8 +784,10 @@ in the event of an unexpected rack outage
     * Can only have `1 profile per VMSS Flex` instance
     * can mix different VMs, Spot, OS, SKUs into the VMSS Flex
     * Up to `1000` VMs in VMSS Flex
-#### Scaling Profile
-* VMSS allows you to define  scaling profile or template, which specifies the properties of the VM Instance which include.
+    * `scale-in` is `not` supported in flexible mode
+    * Upgrade policy is not supoorted in flexible mode
+#### VMSS Scaling Profile
+* VMSS allows you to define scaling profile or template, which specifies the properties of the VM Instance which include.
     * VM Image
     * Admin credentials
     * Network Interface settings
@@ -792,7 +795,63 @@ in the event of an unexpected rack outage
     * OS and Data disk settings
 * When you increase the instance count it will create VMs based on the `profile`
 * Scale Sets with a profile are `uniform`
+#### VMSS Scaling
+* Initial Instance count
+    * Scaling Policy
+        * Manual
+        * custom
+            * Min & Max instance count
+            * Scale Out
+                * CPU Treshold
+                * Duration
+                * Increase instance count by number
+            * Scale In
+                * CPU Treshold
+                * Duration
+                * Increase instance count by number
+        * Scale in Policy
+            * Default - Balance across AZs and fault domains
+            * Newest VM
+            * Oldest VM
+##### VMSS Management
+* Upgrade Policy
+      * Manual
+      * Automatic - Will randomly be upgraded
+      * Rolling - Upgrades roll out in batches with optional pause
+        * set batch size
+        * Set pause time betwen batches
+        * enable cross zone upgrade
+* Enable Overprovisioning
+    * This is used to ensure a higher success rate when scaling out
+* Guest OS updates
+* Instance termination notification
+    * Enable Instance termination notice when scaling in. Min `5 min` & max `15 min`
+    * Notifications through Azure Metadata Service
+##### VMSS Health
+* Health probe
+* Auto repair policy
+    * This deletes unhealth instances if detected
+##### VMSS Advanced
+* Force strictly even balance across zones
+    * This forces the scale out and in to make sure all VMs are evenly scales across zones. If it can't it will fail
+* spreading algorithm
+    *  Max spreading
+        * the scale set spreads your VMs across as many fault domains as possible within each zone. This spreading could be across greater or fewer than five fault domains per zone
+    * Static Fixed Spreading
+        * With static fixed spreading, the scale set spreads your VMs across exactly five fault domains per zone. If the scale set cannot find five distinct fault domains per zone to satisfy the allocation request, the request fails
+### Azure Compute Gallery - NEW
 
+* Allows you to create VM images and then publish those into a gallery
+* Structure of Gallery is:
+    * Azure Compute Gallery > VM Image Definition > VM Version
+    * You can have multiple versions within a VM Image Definition
+* VM Image Version is replicated to one or move regions
+* You need to you RBAC to control access to images and updating of images
+* You can create a VM Image or Application Image
+* To capture a VM Image you can use:
+    * Capture from VM in portal
+    * create an image from a snapshot
+    * Upload a vhd
 ## Skill 3.3 Configure VMs
 When creating a VM there are several options to choose from sych as:
 * Basics
@@ -881,11 +940,11 @@ There are various ways to encrypt disks such as:
     * It doesn't encrypt temp or disk caches
 * Encryption at host
     * Enchances Azure Server Side Encryption and encypts temp and cache disks at rest
-* Azure Disk Encrypton
+* Azure Disk Encrypton (within the OS)
     * You can enable encyption on either:
         * OS Disk
         * OS & Data Disks
-    * To bring your own keys you need to deply key vault `premium` and configure it to allow `Azure Disk Encryption` ADE
+    * To bring your own keys you need to deploy key vault `premium`, and configure it to allow `Azure Disk Encryption`
     * Disk encryption for Windows uses bitlocker and Linux it uses DM-Crypt
 * Confidential Disk Encryption
     * Binds disk encryption keys to the virtual machines TPM and makes the protected disk content accessible only to the VM
@@ -897,11 +956,20 @@ There are various ways to encrypt disks such as:
 * You can control which network interface you send outbound traffic to. However, a VM by default sends all outbound traffic to the IP address that's assigned to the primary IP configuration of the primary network interface
 #### Redeploy VM
 * When you redploy a VM this stops it and allocates it to anoter Hyper-v host
-### Azure Bastion
+```powershell
+set-azvm -reploy -ResourceGroupName "rg" -Name "testvm"
+```
+```azcli
+az vm reploy --resource-group rg --name testvm
+```
+### Azure Bastion - NEW
 * Bastion server has to be in the same region as the destination VMs
 * The bastion service will create a VMSS and will want to created a dedicated vNet and subnet. The subnet `must` be named `AzureBasionSubnet` and it must be a `/26`
-* You can peer the Bastion vNet with other subnets to access the VNs
-* 
+* You can peer the Bastion vNet with other subnets to access the VMs
+
+# Skill 5.2 Azure Backups
+## Azure Backups
+
 
 
 
