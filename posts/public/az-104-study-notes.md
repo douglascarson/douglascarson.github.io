@@ -957,7 +957,7 @@ There are various ways to encrypt disks such as:
 #### Redeploy VM
 * When you redploy a VM this stops it and allocates it to anoter Hyper-v host
 ```powershell
-set-azvm -reploy -ResourceGroupName "rg" -Name "testvm"
+set-azvm -redploy -ResourceGroupName "rg" -Name "testvm"
 ```
 ```azcli
 az vm reploy --resource-group rg --name testvm
@@ -967,8 +967,130 @@ az vm reploy --resource-group rg --name testvm
 * The bastion service will create a VMSS and will want to created a dedicated vNet and subnet. The subnet `must` be named `AzureBasionSubnet` and it must be a `/26`
 * You can peer the Bastion vNet with other subnets to access the VMs
 
-# Skill 5.2 Azure Backups
+# Skill 5.2 Monitor and Azure Backups
+## Azure Monitor
+* Three are three types of monitoring elements:
+    * Metrics
+    * Logs
+* By default metrics sampled at 1 minutes intervals and are are kept for `93` days
+* Retention is 14 days
+* App Insights retention is 90 days
+### Azure Monitoring Agent
+* All legacy agents are getting consolidated into one age called the Azure Monitoring Agent AMA
+* The agent being replaced are:
+    * Log Analytics Agent OMS
+    * Telegraf Agent - Linux 
+    * Diagnostic Extension
+        * Sends data to Monitor Metrics (windows only), Event Hubs and Azure Storage
+* To install the AMA you can:
+    * Deploy through extensions in portal. You need `VM Contributor`
+    * Deploy through ARM `Log Analytics Contributor`
+    * Deploy the agent manually
+* The new AMA agent allows for more granular data collection using `data collection rules`
+* Supports data uploads to multiple locations
+### Log Analytics (Azure Log Monitor)
+* By default Log Analytics will include 5GB of data storage per month
+* You can increase the storage limit by purcasing per-GB pricing
+* To onboard VMs to push their logs to Log Analytics you have to install the `azure log analytics agent (OMS)`
+* The OMS agent must have 443 access to the below domains:
+    * *.ods.opinsights.azure.com
+    * *.oms.opinsights.azure.com
+    * blob.core.windows.net
+    * *.azure-automation.net
+ ### Azure Activity Logs
+ * Activity logs are good to see what actions occur within your environment against the ARM APIs. You will be able to see resource creations, updates, deployments and deletions, but not when traffic is blocked by a rule. This is what diagnostic logs are for. 
+* events in the activity log are kept for `90 days`
+### Resource Diagnostic Logs
+* Diag logs are used to increase Logging to give more advanced analysis
+* Diag logs have to m set manually and can be sent to:
+    * storage account
+    * event Hub
+    * Log Analytics
+    * partner solution
+* Not all resource can have a retention set in diagnostic logs. A retention value of 0 days means infinite. Retention in days is `only applicable if you select storage account`
+### Azure Monitor Alerts
+* when creating an alert rule you have to:
+    * Target the scope (This defines the signals to define the condition)
+    * condition defines the signals
+        * Metrics
+        * Log Analytics KQL Query
+        * Activity Log
+        * Resource Health
+    * Action Groups (what do you do)
+        * Notifications
+            * Email Azure Role
+            * Email/SMS/Push/Voice
+        * actions
+            * runbooks
+            * logic apps
+            * ITSM
+            * webhook (secure)
+            * Function (Requires v2)
+            * Event Hub
+* Alerts can have one of three user states
+    * New
+    * Acknowledged
+    * Closed
+* Alerts can have 1 of 2 states
+    * Fired
+    * resolved
 ## Azure Backups
+
+Azure Backup backups up:
+* VMs
+* SAP Hana Databases running in an Azure VM
+* Azure File Shares
+* Azure SQL
+* SQL running in Azure VMs
+
+To enable Azure Backups you need to create a recovery services vault. This vault must be in the `same region as the VMs you are backing up`.
+* There are two key components to Azure Backup
+    * Recovery Service Vault
+    * Backup Policy
+* backup policy defines the Backup:
+    * schedule
+    * Retention
+        * Daily
+        * Weekly
+        * Monthly
+        * Yearly
+* With the recovery service Vault. There are a number of additonal options you can enable. such as:
+    * Backup Config: Storage Replication
+        * GRS (Default)
+        * ZRS
+        * LRS
+    * Encryption
+        * By Default data at rest is encrypted by Microsoft Managed Keys
+        * Can use your own Keys (Integration with Key Vault)
+        * Can enable encryption on the backup storage Infra
+    * Multi-User Auhorisation
+        * Used to ensure critical tasks on the recovery serice or backup vaults have an additional layer of protection
+    *  Security Settings
+        * Soft delete
+        * Enable soft delete for on-prem systems
+        * soft delete retention period (14 to 180)
+        * Enable Always-on soft delete
+    * Cross Subscription Restore
+    * Security PIN
+### Restore Azure Backups
+* You can restore VMs or files
+* when restoing a VM you can create new or replace existing
+* If restoring a VM you have to create a dedicated storage account. This storage acoount must:
+    * Non ZRS
+    * Doesn't display premium storage accounts
+    * Not attached to any affinity group
+    * Network restricted filtered out
+* File restore has some limitations
+    * Must be less than 10GB of files
+    * bandwidth is imited to 1 GB per hour
+    * You have to map a drive to the snapshot
+    * Can't run the script on:
+        * server with dynamic disks
+        * storage spaces
+        * VM has large disks > 4TB
+    * `It's recommended to have a separate VM only for file recovery (Azure VM D2v3 VMs)` and then shut it down when not required.
+    * if you have encrypted disks you must you need to allow the backup service access to key vault
+
 
 
 
