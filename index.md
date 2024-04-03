@@ -10,3 +10,5 @@
 
 ## Configure windows to connect to GitHub using SSH
 [Read more...](posts/public/26112023)
+## Secure Azure SQL Database with IP Firewall Rule
+[Read more...](posts/public/securing-azure-sql)
