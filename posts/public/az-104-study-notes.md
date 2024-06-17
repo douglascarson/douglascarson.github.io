@@ -78,18 +78,38 @@
 * Access Reviews
 ## AzureAD Self Service Password Reset
 * Global Admin account can always SSPR
-* SSPR uses a `security group` to limit the users who have SSPR enabled
-* All users in the org must have a valid license for SSPR
+* SSPR can be used for `Entra ID Free tier`
+* SSPR for accounts syncronised from or written back to on-premises requires P1 or P2
 * When enabling SSPR there are three options:
     * None
     * Selected (select the security group that enables SSPR)
     * All
 * Select the amount of authenticaton methods and the type a person has to satisfy to reset their password
     * Options include:
-        * email notification
-        * text message,
-        * security code sent to the user's mobile or office phone
-        * User a set of security questions
+        * Mobile app code
+        * Email
+        * Mobile Phone (SMS Only)
+        * Office Phone
+        * Security Question
+* You can configure notifications to notify the user or admins when a SSPR has been performed
+* SSPR Write back is the process of the password hash sync going back to on-prem
+* SSPR password writeback is supported in the hybrid models of:
+    * Password Hash Sync
+    * Pass-through auth
+    * ADFS
+*  on-premises service account that handles password write-back requests cannot change the passwords for users that belong to protected groups
+
+## Manage Microsoft Entra users and groups
+### Types of users
+There are multiple types of users in Entra ID:
+* Internal member:
+This is your normal user (full time employee)
+* Internal Guest:
+These users have an account in your tenant, but have guest-level privileges. It's possible they were created within your tenant prior to the availability of B2B collaboration
+* External member:
+User authenticates using an external account, but has `member access to your tenant`. Usually `multitenant organisations`
+* External Guest:
+This B2B collaboration user has an account in an external Microsoft Entra organization or an external identity provider (such as a social identity), and they have guest-level permissions in the resource organization
 
 
 ## Skill 1.1 Manage Azure identities and governance
@@ -100,14 +120,21 @@
     * Synchronised
 * To create cloud only users within AzureAD you must have `Global Administator` or User `Administrator roles`
 * Non-admin users can set some of their own profile data, but they can't change their display name or account name
-* AzureAD groups can contain Users, Groups, Devices and `Service Principles`
+### Types of Groups
+* AzureAD groups can contain Users, Groups, Devices, `Service Principles` , other groups and `managed Identities`
 * When creating AzureAD groups there are two types:
     * Security
-    * Office 365
-        * An 0365 group is to give access to a shared mailbox, calendar or sharepoint site
-* when using dynamic groups you can populate the group with users or devices but not both
+    * Microsoft 365
+        * An M365 group is to give access to a shared mailbox, calendar or sharepoint site
+### Types of group membership
+* assigned: add specific members to a group
+* Dynamic User: Lets you use dynamic membership rules to automatically add and remove members. If a member's attributes change, the system looks at your dynamic group rules for the directory to see whether the member meets the rule requirements
+* Dynamic Device: Lets you use dynamic group rules to automatically add and remove devices
+* When using dynamic groups you can populate the group with users or devices but not both
 * You can transition from a dynamic group to an `assigned group` and back
 * changing the group type from assigned to dynamic will affect access to it members if they have been granted access to services
+
+* You can only add up to `20` group or roles to a single user
 ### Manage Device Settings
 * To enable, disable or delete devices you must be a global admin
 * deleting a device will delete the bitlocker keys etc
@@ -126,6 +153,13 @@
 * By default `all users and admins` can invite guest users
 * To restrict all users and admins being able to invite guest users you can go to `manage external collaboration settings` under the users blade under user settings
 * until the user accepts the invite they will show as `invited user`
+
+### Deleted Users
+* all users are soft deleted for 30 days
+
+### Assigning Licenses to User or Groups
+* Not all Microsoft services are available in all locations. Before a license can be assigned to a group, you must specify the Usage location for all members
+
 ### Configure AzureAD Join
 * when associating a device with AzureAD you have three options:
     * Register a device (best for BYOD)
@@ -212,12 +246,28 @@
 * you can also exclude actions and data actions by using the `not actions` and `not data actions`
 #
 # Skill 1.3 Manage Subscriptions and Governance
+* Subscriptions serve as a `azure policy boundary`
+* Subscriptions serve as a `scale unit `.  Workloads can scale within the limits of a subscription
+* It is recommended to created `dedicated management and Identity subscriptions` for things like azure monitor logs, automation run books, AD DS servers
 * A subscription is a billing boundry
+* Subscriptions are linked to `a single tenant` which acts as an Idp. You can change this tenant linked to a subscription
+* You can't share Virtual networks across subscriptions but you can peer them or ExpressRoute
+* Establish a dedicated connectivity subscription in your Platform management group to host a Virtual WAN hub, private DNS, ExpressRoute circuit, and other networking resources
+
+## Subscription Types
+The types of subscriptions are:
+* Free Trial
+* Pay as you Go
+* Pay as you go Dev/Test
+* Enterprise Agreement
+* Enterprise Dev/Test
+* Microsoft Customer Agreement
+
 ## Azure Policy
 * Azure Policy is a service that is used to:
     * create, assign and manage policies that enforce governance
 * to implement policy you need to:
-    * authour a definantion
+    * authour a definition
     * assign it to a scope
 * a policy definition describes your desired behavour at resource creation and update
 * through a policy definition you declare what resources and resource features are considered compliant and what should happen when something isn't compliant
@@ -226,10 +276,149 @@
     * Management Groups
     * Subscriptions
     * Resource Groups
+    * Individual resources
 * You can `exclude` from scopes. You can exclude:
     * subscriptions
     * resource groups
     * resources
+### Policy Evaluation Outcomes
+* Resources are evaluated at specific times during the resource lifecycle:
+    * A resource is created or updated in a scope with a policy assignment
+    * a policy or iniative is assigned to a scope
+    * A policy or inititive assigned to a scope is updated
+    * During a `policy evaluation cycle` that happens `every 24 hours`
+ ### Policy response to an evaluation
+
+* There a number of reponses that can happen to a resource when it's non-compliant
+Responses are made possible through effects in the poilcy rule:
+    * Deny the resource change
+    * log the change to the resource
+    * Alter the resource before the change
+    * Alter the resource after the change
+    * Deploy related compiant resources
+    * Block actions on resources
+ ### Policy Definition JSON Elements
+ The different elements of the JSON file are:
+* display name
+* description
+* mode
+* metadata
+* parameters
+* policyRule
+    * logical evaluations
+    * effects
+
+__mode__
+
+mode defines what resources are evaluated for a policy definition:  
+* all: evaluate resource groups, subscriptions, and all resource types
+* indexed: only evaluate resource types that `support location and tags` 
+
+* The recommendation is to use `mode all`. By default when you create a custom definition it will put the mode to all.
+* The indexed mode is used for backward compatibility and if you need to enforce location or tags. While not required, it prevents resources that don't support tags and locations from showing up as non-compliant in the compliance results
+
+### Policy Rule and Effects
+The Policy rule consists of an if and then statement
+</br>The if statement is a `condiiton` and if it evaluates to `true` the effect get triggered
+
+#### policy logical operators:
+
+* not
+* allof - similar to `logical and`
+* anyof - similare to `logical or`
+
+#### policy conditions:
+* "equals": "stringValue"
+* "notEquals": "stringValue"
+* "like": "stringValue"
+* "notLike": "stringValue"
+* "match": "stringValue"
+* "matchInsensitively": "stringValue"
+* "notMatch": "stringValue"
+* "notMatchInsensitively": "stringValue"
+* "contains": "stringValue"
+* "notContains": "stringValue"
+* "in": ["stringValue1","stringValue2"]
+* "notIn": ["stringValue1","stringValue2"]
+* "containsKey": "keyName"
+* "notContainsKey": "keyName"
+* "less": "dateValue" | "less": "stringValue" | "less": intValue
+* "lessOrEquals": "dateValue" | "lessOrEquals": "stringValue" | "lessOrEquals": intValue
+* "greater": "dateValue" | "greater": "stringValue" | "greater": intValue
+* "greaterOrEquals": "dateValue" | "greaterOrEquals": "stringValue" | "greaterOrEquals": intValue
+* "exists": "bool"
+#### Policy Effects
+* policy effects determine what happens when the condition matches
+
+The following are the supported policy effects:
+* addToNetworkGroup
+* append
+* audit
+* auditIfNotExists
+* deny
+* denyAction
+* deployIfNotExists
+* disabled
+* manual
+* modify
+* mutate
+
+##### Policy effects execution order:
+* disabled
+* modify | append </br>
+The append effect can:
+    * append values to an array in an arm template. 
+    * <span style="color:yellow"> append is only good for arrays in an ARM templates. Will not work with other types.</span>
+    * Cannot do remediation </br>
+
+    The modify effect can:
+    * append to arrays
+    * Can inject information into the ARM template during deployment
+    * <span style="color:yellow">**Can** perform remediation using a managed ID</span>
+    * <span style="color:yellow">conflictEffect</span> is used to deal with the scenario if two policies are trying to change the same resource. You can use audit and deny
+* deny
+* audit (no action and repots to compliance dashboard)
+* auditIfNotExists | deployIfNotExists (understands relationship of parent and child resources)</br>
+    auditIfNotExist can define a parent and child relationship. Like VM and extension.
+    ``` json
+
+    {
+        "if": {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachines"
+        },
+        Simple If statement checking if the type is virtual machine
+        "then":{
+            "effect": "auditIfNotExists",
+            "details": {
+                "type": "Microsoft.Compute/virtualMachines/extensions",
+        Focusing the details on the extensions of that VM
+                "existenceCondition": {
+                    "allof":[{
+                        "field": "Microsoft.Compute/virtualMachines/extensions/publisher",
+                        "equals": "Microsoft.Azure.Security"
+                    },
+                    {
+                        "field": "Microsoft.Compute/virtualMachines/extensions/type",
+                        "equals": "IaaSAntimalware"
+                    }
+        Existance condition to check of the VM has an extension with publisher Azure Secuity AND the type IaaSAntimalware 
+                    ]
+                }
+            }
+        }
+    }
+    If the condition is false (as in it doesn't have IaaSAntimalware installed it will raise an alert to the compliance dashboard)
+    ```
+   
+* (preview) denyAction
+
+#### layering Policy Definitions
+* If you have a policy definition at the subscription level and one at the resource group level they are `cumulative most restrictive`
+* If you create a resource within the resource group for deny of westus and eastus then you won't be able to create a resource in either of those regions
+* you can use exclusions to work around this issue
+
+
 ## Resource Locks
 * There are two types of resource locks:
     * delete
@@ -1063,7 +1252,7 @@ To enable Azure Backups you need to create a recovery services vault. This vault
         * By Default data at rest is encrypted by Microsoft Managed Keys
         * Can use your own Keys (Integration with Key Vault)
         * Can enable encryption on the backup storage Infra
-    * Multi-User Auhorisation
+    * Multi-User Authorisation
         * Used to ensure critical tasks on the recovery serice or backup vaults have an additional layer of protection
     *  Security Settings
         * Soft delete
