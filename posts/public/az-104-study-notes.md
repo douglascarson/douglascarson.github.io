@@ -609,7 +609,10 @@ Replication Options| LRS, ZRS, GRS, RA-GRS, GZRS, RA-GZRS| LRS, GRS, RA-GRS| LRS
 * A SAS token is a way to granularly control how a client can access data in an azure storage account
 #### Types of shared access signatures
 * Account SAS
-    * delegate access to resources in one or more storage services (blob, tablem queue and file)
+    * delegate access `service level` operations that aren't available to sevice based SAS
+    * delegate to more than one service at a timesuch as: blob, tablem queue and file
+    * delegate access to `write and delete` operations for `containers, queues, tables and file shares`
+    * <span style="color:yellow">SAS Account Policies are not supported with Account SAS</span>
     * you can specify IP whitelists
     * specify HTTP protocol HTTP/HTTPS
     * The account sas URI consists of:
