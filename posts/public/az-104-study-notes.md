@@ -615,7 +615,7 @@ Replication Options| LRS, ZRS, GRS, RA-GRS, GZRS, RA-GZRS| LRS, GRS, RA-GRS| LRS
     * The account sas URI consists of:
         * URI to the resource
         * SAS Token
-![SAS Token Parameters](../images/SAS_Token_parameters.png)
+![SAS Token Parameters](../images/SAS_Token_parameters.png =250x250)
     * SAS Token consists of:
         * api-version
         * SignedVersion (sv) - Specifies the signed storage version
