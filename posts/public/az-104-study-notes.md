@@ -308,8 +308,6 @@ Responses are made possible through effects in the poilcy rule:
     * logical evaluations
     * effects
 
-__mode__
-
 mode defines what resources are evaluated for a policy definition:  
 * all: evaluate resource groups, subscriptions, and all resource types
 * indexed: only evaluate resource types that `support location and tags` 
@@ -506,109 +504,85 @@ update-aztag -resourceId $resource.Id -tag $tags -operation replace
     * https://account.azure.com - Used for all subscribtions and accessible by account owners `This is decomissioned and is now in portal.azure.com`
     * https://portal.azure.com - Used for all subscriptions and includes `Azure Cost Management`
 
-# Types of Storage
+# Implement and manage storage (15–20%)
 
-## Skill 2.1 Secure Storage
-* An azure storage account is an entity used to store azur storage data such as:
-    * blob
-    * table
-    * queue
-    * file
-    * page
-### Storage Firewall
-* The storage firewall allows you to limit access to a storage account from cert IP addresses or ranges
-* When using the storage firewall you `must` use public IP addresses not private
-* Once applied it applies to all services (blob, queue, table)
-* Service endpoints are used to restrict access to `certain subnets within a vNet`. The client is still using the PIP of the storage account
-* Allow Trusted Microsoft Service to access this account is used to allow certain `trusted` sevices access, such as:
-    * Azure Backup
-    * ASR
-    * Azure Networking
-* Service Endpoints provide two benefits:
-    * Restict access to only the subnet within the vNet configured
-    * provide a more efficient route to access the storage account
-* by default read access to anonymous users is blocked
-* blob storage access levels:
-    * Private - Only the storage account `owner` has access to the container and it's blobs. No one else has access
-    * blob - Only blobs within this container can be access anonymously
-    * container - blobs and the container can be accessed anonymously
-* the access level is configured `per container`
-### Storage Account Performance Tiers
-* Standard
-    * Supports all storage services:
-        * blob
-        * table
-        * file
-        * queues
-        * Unmanaged storage disk
-    * Three possible values for the Standard Tier:
-        * General Purpose V1
-        * General Purpose V2
-        * Blob Storage
-* Premium 
-    * Backed by SSD
-    * Only supports General purpose accounts
-    * Disk Blobs and page blobs
-    * Block Blobs and Append Blobs
-    * Azure Files
-    * Only supports `LRS` replication
-    * There are 4 values for premier Tier:
-        * General Purpose V1
-        * General Purpose V2
-        * BlockBlobStorage
-        * FileStorage
-* Only General Purpose V2 support Hot, Cool and Archive Access Tiers
-* General Purpose V1 can be upgraded to V2 but not back
+## Configure access to storage
+### Configure Azure Storage firewalls and virtual networks
+* you can limit requests to storage accounts and data through mu;tiple layers such as:
+* IP whitelist
+* IP Range
+* vNet
+* Resource Instance (using managed service account)
+* private endpoint
 
-||General Purpose V2| General Purpose V1| Blob Storage| Block Blob Storage|File Storage| 
-----|--------|---|--|--|--|
-Services Supported| Blob, File, Queue, Table|Blob, File, Queue, Table|Blob (`Block Blobs and Append Blobs Only`)| Blob (`Block Blobs and Append Blobs Only`)| File Only
-Unmanaged Disk (Page Blob)| Yes| Yes| No| No| No
-Supported Perfoamance Tiers| Standard, Premium|Standard, Premium| Standard| Premium | Premium
-Supported Access Tiers| Hot, Cool, Archive| NA|Hot, Cool, Archive| NA|NA
-Replication Options| LRS, ZRS, GRS, RA-GRS, GZRS, RA-GZRS| LRS, GRS, RA-GRS| LRS, RDS, RA-GRS| LRS, ZRS| LRS, ZRS
-* LRS (Local Redundant)
-    * Replicated three times in one datacentre
-    * Protects again server and rack failure
-    * write request to storage happens syncronosly
-* ZRS (Zone Redundant)
-    * Replicates data across `three availability zones in a region` and replicates it three times in each datacentre
-    * The data commit comes back only after all the data has been `synchronosly` across all availability zones
-    * The Archive tier for Blob Storage isn't currently supported for ZRS, GZRS, or RA-GZRS
-* GRS (Geo-Redundant Storage)
-    * Copies you data `three times in a single datacentre` and `asynchronosly to a single datacentre with three copies in the paired region`
-* GZRS (Zone Redundant Geo-Replicated)
-    * Copies your data using ZRS in the primary region
-    * Async copy to a `single datacentre` in the secondary region
-    * provides `three copies in the single datacentre in the secondary region`
-* RA-GRS (Read-access geo-redundant storage)
-    * Primary region has three copies on the data in one AZ
-    * Secondary region has three copies on the data in one AZ
-    * Read-Only Access to data replicated data in the secondary region
-* RA-GZRS (read-access geo-zone-redundant storage)
-    * Read-Only Access to data replicated to a all AZ's in the secondary region
-### Replication RPO
-* Geo-Replication is async replication. The expected maxium RPO is less than 15 minutes, but there is no SLA
-## Access Tiers
-* Hot
-    * Access tier is used to store `frequently accessed` data
-* Cool
-    * storage large amounts of data
-    * data is not accessed for at least `30 days`
-    * SLA lower than the hot tier
-    * Storage costs are lower than hot tier
-    * Access costs are higher than the hot tier
-* Archive
-    * Accessed rarely
-    * several hours of retreival latency
-    * data should remain in the archive tier for at east `180 days`
-    * cheapest storage cost
-    * most expensive access cost
-    * You have to set the archive tier at the `blob level`
+#### Storage account firewall
+* The storage account firewall is a way to control the `public` endpoint
+* When you are using a private endpoint you still have to use the storage account firewall to block the public endpoint
+* The storage account firewall is only applicable to the data plane not the control plane
+* you can use Network policies and restrict communication to a private endpoint storage account
+* Classic storage accounts don't support firewalls and virtual networks
+
+## Description of Authorisation Options
+### Shared Key Authorisation
+* applies to blob, files, queues and tables
+* Shared key is passed with every request
+* Signed using the <span style="color:yellow">storage account key<span>
+
+### Shared Access Signatures
+* applies to blob, files, queues and tables
+* A service SAS or account SAS is signed with the <span style="color:yellow">storage account key<span> 
+* user delegated SAS is signed with <span style="color:yellow">MS Entra credentials and applies to blob only</span>
+
+### MS Entra Intergation
+* Applies to blob, queue, and table resources. Microsoft recommends using Microsoft Entra credentials with managed identities
+* You can use Azure role-based access control (Azure RBAC) to manage a security principal's permissions to blob, queue, and table resources
+* You can also use Azure attribute-based access control (ABAC) to add conditions to Azure role assignments for blob resources to further restrict access
+
+### Microsoft Entra Domain Services authentication
+* Azure Files supports identity-based authorization over Server Message Block (SMB) through Microsoft Entra Domain Services
+
+### On-premises Active Directory Domain Services (AD DS, or on-premises AD DS) authentication:
+* Azure Files supports identity-based authorization over SMB through AD DS
+* SMB access to Files is supported using AD DS credentials from domain joined machines, either on-premises or in Azure
+
+## Authorisation Options for Data Operations
+Authorization ensures that the client application has the appropriate permissions to access a particular resource in your storage account. The authorisation options are:
+### Blob
+* Microsoft Entra ID with `managed identities`
+* Shared Key (storage account Key). <span style="color:yellow">MS recommend you disallow shared key authorisation</span>
+* Shared Access Signature (SAS) <span style="color:yellow">MS recommend using user delegaton SAS<span>
+* Anonymous Read <span style="color:yellow">Microsoft recommends that you disable anonymous access for all of your storage accounts</span>
+* Storage local users (SFTP Only)
+### Files (SMB)
+* Microsoft Entra ID
+    * Supported with Microsoft Entra Domain Services for Cloud Only
+    * Hybrid uses Microsoft Entra Kerberos for hybrid Identities
+* Shared Key (storage account Key). <span style="color:yellow">MS recommend you disallow shared key authorisation</span>
+* On-premises Active Directory Domain Services
+    * Supported, and credentials must be synced to Microsoft Entra ID
+### Queues
+* Microsoft Entra ID with `managed identities`
+* Shared Key (storage account Key). <span style="color:yellow">MS recommend you disallow shared key authorisation</span>
+* Shared Access Signature (SAS) <span style="color:yellow">MS recommend using user delegaton SAS<span>
+### Tables
+* Microsoft Entra ID with `managed identities`
+* Shared Key (storage account Key). <span style="color:yellow">MS recommend you disallow shared key authorisation</span>
+* Shared Access Signature (SAS) <span style="color:yellow">MS recommend using user delegaton SAS<span>
+
+
+
+### <span style="color:orange">Create and use shared access signature (SAS) tokens </span>
+#### Shared Access keys
+* Shared access Keys are two 512 bit keys generated at storage account creation
+* You can set a Shared Access Key expiration policy that will remind you to rotate the keys
+* you can create a connection string using your Shared Access key in the format DefaultEndpointsProtocol=https;AccountName=stotageAccountName;AccountKey=<account-key>
+
 ### Shared Access Signature
 * A SAS token is a way to granularly control how a client can access data in an azure storage account
 #### Types of shared access signatures
-* Account SAS
+---
+##### Account SAS
+* Account SAS (define this as the Shared Access Signature Option)
     * delegate access `service level` operations that aren't available to sevice based SAS
     * delegate to more than one service at a timesuch as: blob, tablem queue and file
     * delegate access to `write and delete` operations for `containers, queues, tables and file shares`
@@ -648,8 +622,15 @@ Replication Options| LRS, ZRS, GRS, RA-GRS, GZRS, RA-GZRS| LRS, GRS, RA-GRS| LRS
         * SignedProtocol (spr) - details if communication can be http, https or http/https
         * Signed EncryptionScope (ses) - EncryptionScope
         * Signature (sig) - Signature
-* Authorising Access to Blobs using Azure AD
-    * Using Azure AD is only supported on `blob and queue` storage
+##### Service SAS
+* linked to only one of the services such as Blob storage, Queue storage, Table storage, or Azure Files
+* A stored access policy can be used to store constraints for service level SAS tokens for blob container, table, queue, or file share
+* This uses the Storage Account Key to sign
+
+##### User Delegation SAS
+* Authorising Access to Blobs using Entra ID
+    * Using Azure AD is only supported on `blob` storage
+    * It is signed by the <span style="color:yellow"> User Delegation Key</span>
     * If an application is running from an azure resource you can use a managed identity
     * To use Azure AD to authorise the access to blob storage the service needs to return an oData token
     * There are two client libraries to acquire a token:
@@ -667,20 +648,33 @@ Replication Options| LRS, ZRS, GRS, RA-GRS, GZRS, RA-GZRS| LRS, GRS, RA-GRS| LRS
         * Storage Queue Data Reader
         * Storage Queue Data Message Processor
         * Storage Queue Data Message Sender
-### Stored Access Policy
-* You can create a stored access policy only on the `container`
-    * You can specify:
-        * Identifier
-        * Permissions (list, Read, Add, Create, Write, Delete)
+---
+### <span style="color:orange"> Configure stored access policies </span>
+* A storage access policy is only applicable to <span style="color:yellow"> service SAS</span> as the account and user delegated are adhoc
+* It is used to place further constraints on SAS keys like: start time, end time and permissions
+* You can specify:
+    * Identifier
+    * Permissions (list, Read, Add, Create, Write, Delete)
     * Start and End Time
 * You can have a max of `5` access policies
 * You refernce the access policy when creating a SAS token using cli or storage explorer
 * To revoke the sas keys linked to the Storaged Access Policy you would delete the policy
-### Access keys
-* With an access key to a storage account you have full rights over data in all services
-* As there is two access keys you can roll the keys without issues
+---
+### <span style="color:orange">Manage Access Keys </span>
+* The storage account access keys allow full access to your storage account
+* It is recommended to rotate them
+* It is recommended to create an azure key exporation policy to monitor when keys are required to be rotated
 * rolling a storage account access key will `invalidate any sas tokens that were generated using that key`
-### Azure Files
+---
+### <span style="color:orange">Configure identity-based access for Azure Files</span>
+* Azure Files support Identity based authentication over SMB through the following methods:
+* On-prem AD DS (you need to sync users to Entra ID)
+* Entra Domain Services (cloud based)
+* Microsoft Entra Kerberos for hybrid Identies. Using Microsoft Entra ID for authenticating hybrid user identities allows Microsoft Entra users to access Azure file shares using Kerberos authentication.
+This means your end users can access Azure file shares over the internet without requiring network connectivity to domain controllers from Microsoft Entra hybrid joined and Microsoft Entra joined VM
+* AD Kerberos authentication for Linux clients: Linux clients can use Kerberos authentication over SMB for Azure Files using on-premises AD DS or Microsoft Entra Domain Services
+---
+
 * Standard file shares support LRS, ZRS, GRS and GZRS
 * Premium shares support LRS and ZRS
 ### Configuring Access to Files
@@ -707,6 +701,106 @@ net use <drive letter>:\\storage-account.file.core.windows.net\fileshare /user:a
 ```
 * You can use file explorer or icacls to grant permissions to all directories and fies under the file share
 ---
+
+
+### Storage Account Performance Tiers
+* Standard
+    * Supports all storage services:
+        * blob
+        * table
+        * file
+        * queues
+        * Unmanaged storage disk
+    * Three possible values for the Standard Tier:
+        * General Purpose V1 (legacy)
+        * General Purpose V2
+        * Blob Storage (legacy)
+* Premium 
+    * Backed by SSD
+    * Only supports General purpose accounts
+    * page blobs, Block Blobs and Append Blobs supported
+    * Azure Files
+    * Only supports `LRS & ZRS` replication
+    * There are 4 values for premier Tier:
+        * General Purpose V1
+        * General Purpose V2
+        * BlockBlobStorage
+        * FileStorage
+* Only General Purpose V2 support Hot, Cool and Archive Access Tiers
+* General Purpose V1 can be upgraded to V2 but not back
+
+||General Purpose V2 (HDD)| General Purpose V1 (legacy)| Blob Storage (legacy)| Block Blob Storage (Premium)|File Storage (Premium)|Page Blob (Premium) 
+----|--------|---|--|--|--|--|
+Services Supported| Blob, File, Queue, Table|Blob, File, Queue, Table|Blob (`Block Blobs and Append Blobs Only`)| Blob (`Block Blobs and Append Blobs Only`)| File Only| Best for random read/write
+Unmanaged Disk (Page Blob)| Yes| Yes| No| No| No| No
+Supported Perfoamance Tiers| Standard, Premium (SSD)|Standard, Premium (SSD)| Standard| Premium (SSD) | Premium (SSD)| Premium (SSD)
+Supported NFS| NA| NA|NA| NA|True| NA
+Supported Access Tiers| Hot, Cool, Archive| NA|Hot, Cool, Archive| NA|NA| NA
+Replication Options| LRS, ZRS, GRS, RA-GRS, GZRS, RA-GZRS| LRS, GRS, RA-GRS| LRS, RDS, RA-GRS| LRS, ZRS| LRS, ZRS| LRS, ZRS
+* LRS (Local Redundant)
+    * Replicated three times in one datacentre
+    * Protects again server and rack failure
+    * write request to storage happens syncronosly
+* ZRS (Zone Redundant)
+    * Replicates data across `three availability zones in a region` and replicates it three times in each datacentre
+    * The data commit comes back only after all the data has been `synchronosly` across all availability zones
+    * The Archive tier for Blob Storage isn't currently supported for ZRS, GZRS, or RA-GZRS
+* GRS (Geo-Redundant Storage)
+    * Copies you data `three times in a single datacentre` and `asynchronosly to a single datacentre with three copies in the paired region`
+* GZRS (Zone Redundant Geo-Replicated)
+    * Copies your data using ZRS in the primary region
+    * Async copy to a `single datacentre` in the secondary region
+    * provides `three copies in the single datacentre in the secondary region`
+* RA-GRS (Read-access geo-redundant storage)
+    * Primary region has three copies on the data in one AZ
+    * Secondary region has three copies on the data in one AZ
+    * Read-Only Access to data replicated data in the secondary region
+* RA-GZRS (read-access geo-zone-redundant storage)
+    * Read-Only Access to data replicated to a all AZ's in the secondary region
+### Storage Firewall
+* You can limit access to the storage account to:
+    * Public IPs
+    * vNets
+    * Resource Instances through their managed Identities
+    * private Endpoints
+* The Storage firewall is used to block `Public IPs only` 
+* When using the storage firewall you `must` use public IP addresses not private
+* Once applied it applies to all services (blob, queue, table)
+* Service endpoints are used to restrict access to `certain subnets within a vNet`. The client is still using the PIP of the storage account
+* Allow Trusted Microsoft Service to access this account is used to allow certain `trusted` sevices access, such as:
+    * Azure Backup
+    * ASR
+    * Azure Networking
+* Service Endpoints provide two benefits:
+    * Restict access to only the subnet within the vNet configured
+    * provide a more efficient route to access the storage account
+* by default read access to anonymous users is blocked
+* blob storage access levels:
+    * Private - Only the storage account `owner` has access to the container and it's blobs. No one else has access
+    * blob - Only blobs within this container can be access anonymously
+    * container - blobs and the container can be accessed anonymously
+* the access level is configured `per container`
+
+### Replication RPO
+* Geo-Replication is async replication. The expected maxium RPO is less than 15 minutes, but there is no SLA
+## Access Tiers
+* Hot
+    * Access tier is used to store `frequently accessed` data
+* Cool
+    * storage large amounts of data
+    * data is not accessed for at least `30 days`
+    * SLA lower than the hot tier
+    * Storage costs are lower than hot tier
+    * Access costs are higher than the hot tier
+* Archive
+    * Accessed rarely
+    * several hours of retreival latency
+    * data should remain in the archive tier for at east `180 days`
+    * cheapest storage cost
+    * most expensive access cost
+    * You have to set the archive tier at the `blob level`
+
+
 ## Skill 2.2 manage storge
 
 If you dataset is large you can sip your data and import it into azure using the `Azure Import/Export` service.
