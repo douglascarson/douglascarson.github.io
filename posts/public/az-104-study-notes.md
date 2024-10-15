@@ -34,8 +34,8 @@
     * This is a biling construct.  You can have multiple subscriptions linked to one AzureAD tenant
 ## Compare AzureAD to AD DS
 * Azure AD is designed for Internet based applications that use HTTP or HTTPS
-* AD DS supports Kerberos, NTLM where as AzureAD supports HTTP bases authentication protocols such as OpenID, WS-Fed, SAML and Oauth
-* AzureAD includes `fderation Services` for many third-party services
+* AD DS supports Kerberosand NTLM, where as, AzureAD supports HTTP bases authentication protocols such as OpenID, WS-Fed, SAML and Oauth
+* AzureAD includes `federation Services` for many third-party services
 * AzureAD is  flat structure and does not include OU's or GPOs
 ## AzureAD Editions
 * AzureAD comes in 4 editions:
