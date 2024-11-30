@@ -4,6 +4,7 @@ When authenticating with Azure DevOps Repos there is three ways to authenticate:
 * SSH (Public and private key)
 * PAT (Personal Access Token)
 * HTTPS authentication using Git Credential Manager
+
 ## Setting up Git credential Manager
 To set up Git credetial manager you can install it as part of the Git Installation wizard.
 Once it is configured and you clone a repo, you will be prompted for you login credentials to ADO.
