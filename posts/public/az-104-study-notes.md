@@ -1,12 +1,12 @@
 # AZ-104 Study Notes
-## Describe EntraID
-* EntraID is MS multi tenat cloud identify service
-* Some of the authentication protocols EntraID uses are:
+## Describe Entra ID
+* Entra ID is MS multi tenat cloud identify service
+* Some of the authentication protocols Entra ID uses are:
     * OpenID
     * WS-Fed
     * SAML
     * Oauth
-## EntraID features
+## Entra ID features
 * SSO
 * Ubiqitious device support
     * Support Windows, IOS, Android and macOS
@@ -20,7 +20,7 @@
     * Can monitor suspicious sign-in activities and potential vulnerabilities from a central location
 * self-service support
     * delegate tasks to employees such as password reset or app access
-## EntraID Concepts
+## Entra ID Concepts
 * Identity
     * An object that can be `authenticated` 
     * Can be applications, servers that require authentication by using a secret key or cert
@@ -29,37 +29,37 @@
 * Azure AD Account
     * An Azure AD account is an identity that was created through a Microsoft service. The Azure AD account is also called a work or school account.
 * Azure AD Tenant
-    * An Azure tenant is a single dedicated and trusted instance of EntraID. A tenant (`directory`) represents a single organisation. An Organisation can create more than one tenant
+    * An Azure tenant is a single dedicated and trusted instance of Entra ID. A tenant (`directory`) represents a single organisation. An Organisation can create more than one tenant
 * Azure Subscription
-    * This is a biling construct.  You can have multiple subscriptions linked to one EntraID tenant
-## Compare EntraID to AD DS
+    * This is a biling construct.  You can have multiple subscriptions linked to one Entra ID tenant
+## Compare Entra ID to AD DS
 * Azure AD is designed for Internet based applications that use HTTP or HTTPS
-* AD DS supports Kerberosand NTLM, where as, EntraID supports HTTP bases authentication protocols such as OpenID, WS-Fed, SAML and Oauth
-* EntraID includes `federation Services` for many third-party services
-* EntraID is  flat structure and does not include OU's or GPOs
-## EntraID Editions
-* EntraID comes in 4 editions:
+* AD DS supports Kerberosand NTLM, where as, Entra ID supports HTTP bases authentication protocols such as OpenID, WS-Fed, SAML and Oauth
+* Entra ID includes `federation Services` for many third-party services
+* Entra ID is  flat structure and does not include OU's or GPOs
+## Entra ID Editions
+* Entra ID comes in 4 editions:
     * Free
     * M365 Apps
     * Premium P1
     * Premium P2
 * Free comes with all sign ups
 * Premium comes with an `Enterprie Agreement`, `Open Volume License Program`, and the `Cloud Solution Providers`
-### EntraID Free
+### Entra ID Free
 * User & Group Management
 * Protect Azure AD tenant admin accounts with MFA
 * Mobile app as a second factor
-* On-prem directory sync through EntraID Connect
+* On-prem directory sync through Entra ID Connect
 * Basic Reports
 * SSO
-### EntraID M365 Apps
+### Entra ID M365 Apps
 * Included with M365
 * Free + Identity and Access Management for M365 Apps
 * Branding
 * MFA
 * Group Access Management
 * Self Service Password reset for cloud users
-### EntraID Premium P1
+### Entra ID Premium P1
 * Cost per user. cost is approx $9 per month per user
 * Free + Access to on-prem and cloud resources
 * `conditional access`
@@ -70,13 +70,13 @@
 * on-prem identity and management suite
 * The extra features in P1 allow self-service password reset for your on-premises users
 * Trusted IPs
-### EntraID Premium P2
+### Entra ID Premium P2
 * Free + P1
 * cost is $12 per user per month
 * Azure AD Identity Protection to help provide `risk-based Conditional Access`
 * PIM (protect admin accounts and JIT)
 * Access Reviews
-## EntraID Self Service Password Reset
+## Entra ID Self Service Password Reset
 * Global Admin account can always SSPR
 * SSPR can be used for `Entra ID Free tier`
 * SSPR for accounts syncronised from or written back to on-premises requires P1 or P2
@@ -118,11 +118,11 @@ This B2B collaboration user has an account in an external Microsoft Entra organi
 * There are two types if User Objects
     * Cloud Only
     * Synchronised
-* To create cloud only users within EntraID you must have `Global Administator` or User `Administrator roles`
+* To create cloud only users within Entra ID you must have `Global Administator` or User `Administrator roles`
 * Non-admin users can set some of their own profile data, but they can't change their display name or account name
 ### Types of Groups
-* EntraID groups can contain Users, Groups, Devices, `Service Principles` , other groups and `managed Identities`
-* When creating EntraID groups there are two types:
+* Entra ID groups can contain Users, Groups, Devices, `Service Principles` , other groups and `managed Identities`
+* When creating Entra ID groups there are two types:
     * Security
     * Microsoft 365
         * An M365 group is to give access to a shared mailbox, calendar or sharepoint site
@@ -160,19 +160,19 @@ This B2B collaboration user has an account in an external Microsoft Entra organi
 ### Assigning Licenses to User or Groups
 * Not all Microsoft services are available in all locations. Before a license can be assigned to a group, you must specify the Usage location for all members
 
-### Configure EntraID Join
-* when associating a device with EntraID you have three options:
+### Configure Entra ID Join
+* when associating a device with Entra ID you have three options:
     * Register a device (best for BYOD)
     * join a device (best for corporate)
     * Hybrid-AD (joined to AD DS and replicated)
 * device registration settings are in Devices > device settings
 * Device settings:
     * Users may join devices to azure AD
-        * by default all users are allowed to join their device to EntraID. You can select `all`, `group` or `none`
+        * by default all users are allowed to join their device to Entra ID. You can select `all`, `group` or `none`
     * Additional local admins on Azure AD joined devices
-        * with EntraID premium or Enterprise mobility suite you can choose which users or groups have local admin to the device. By default the 'global admin' and `device owner` has local admin right
-    * Users may register their devices with EntraID
-        * allow user to register their devices with EntraID (Workplace Join)
+        * with Entra ID premium or Enterprise mobility suite you can choose which users or groups have local admin to the device. By default the 'global admin' and `device owner` has local admin right
+    * Users may register their devices with Entra ID
+        * allow user to register their devices with Entra ID (Workplace Join)
         * if you use InTune or MDM this will be set to `all` and will be greyed out
     * Require MFA to join devices
         * You must have the users approved to do this configured with MFA
@@ -181,7 +181,7 @@ This B2B collaboration user has an account in an external Microsoft Entra organi
     * Manage Enterprise state roaming settings
         * Users May Sync Settings And App Data Across Devices
         * only applicable to windows 10
-* EntraID Join
+* Entra ID Join
     * there are two types of AD Join:
         * Non-Hybrid
         * Hybrid
