@@ -1,5 +1,6 @@
 # AZ-104 Study Notes
-## Describe Entra ID
+## Describe 
+
 * Entra ID is MS multi tenat cloud identify service
 * Some of the authentication protocols Entra ID uses are:
     * OpenID
