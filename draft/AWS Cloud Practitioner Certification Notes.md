@@ -608,6 +608,142 @@ There are three types of Storage Gateway
 
 <img src=./AWS_DRS_High_Level_Architecture.png alt="AWS DRS HLD" />
 
+## Route 53
+* 'Route 53 has routing policies that you can use to route traffic to a secondary service or server
+
+
+|Routing Policy|Purpose|
+|---|---|
+|Simple|Simple DNS responses|
+|Failover|If primary is down (based on health checks) routes to secondary destination|
+|Geolocation|Uses geographic location client is in to route user to closest region|
+|Geoproximity|Routes to the closest region within a geo|
+|Latency|Directs based on the lowest latency route to resources|
+|MultiValue Answer|Returns several IP addresses and functions as a basic load balancer|
+|Weighted|Uses relative weights assigned to resources|
+|IP Based|Route based on the originating IP address of the traffic|
+
+### Health Checks
+* You can configure Route 53 to perform heartveats agains an IP address of domain name
+* The resources you can select to be monitored are:
+    * Endpoint
+        * IP Address
+        * Domain Name (HTTP/HTTPS/TCP)
+    * Calculated Health Check
+        * This allows Route 53 to see if the status of another health check is healthy or unhealthy
+        * One situation where this might be useful is when you have multiple resources that perform the same function, such as multiple web servers, and your chief concern is whether some minimum number of your resources are healthy. You can create a health check for each resource without configuring notification for those health checks. Then you can create a health check that monitors the status of the other health checks and that notifies you only when the number of available web resources drops below a specified threshold.
+        * You can create a cloudwatch alarm that monitors metrics, availablility of resources. You can create a Route 53 health check that monitors the same stream of data.
+### Amazon EC2 Auto Scaling
+* Automatically launches and terminates instances (Scaling Out)
+* Maintain availability and scale capacity
+* Works with EC2, ECS and EKS
+* Integrates with many AWS services, inclusing:
+    * Cloudwatch for monitoring and scaling
+    * Elastic Load Balancer
+    * EC2 Spot Instances for cost optimisation
+    * Amazon VPC for deploying instances across AZs
+* Cloudwatch can be integrated to monitor metrics at 5min and 1 min frequency.
+* Cloudwatch can notify the auto scaling group to launch a new instance. This is accomplished through Cloudwatch alarms
+* You can scale on demand and on a schedule
+* Scaling policies define how to respond to changes in demand
+
+#### Components of a Auto Scaling group
+* Launch Template specifies the EC2 instance configuration
+* Launch Templates define:
+    * AMI and instance type
+    * EBS Volumes
+    * Security Groups
+    * Key Pair
+    * IAM Instance Profiles
+    * User Data
+    * Shutdown Behaviour
+    * Termination Protection
+    * Placement Group Name
+    * Capacity Reservation
+    * Tenancy
+    * Purchasing Option
+
+* The Second things that need to be configured are:
+    
+    * Purchase Options
+    * VPC and Subnets across AZs
+    *  Attach load balancer
+    * configure health cheks for EC2 and ELB
+    * Group size and scaling policies
+* Amazon EC2 Auto Scaling Health Checks:
+    * EC2 = EC2 Status Checks
+    * ELB = Uses in addition to EC2 status checks
+    * Health Check Grace Period  
+    This is how long to wait before checking the health statis of the instance
+* Types of auto scaling
+    * manual- Makes changes to ASG size manually
+    * Dynamic - automatically scales on demand
+    * Predictive - Uses ML to predict demand
+    * Scheduled - scales based on a schedule
+
+## Amazon Elastic Load Balancing
+* Provides HA and fault tolerance for instances
+* Targets include:
+    * EC2 Instances
+    * ECS containers
+    * IP addresses
+    * lambda functions
+    * Other load balancers (You can chain them together)
+### Types of ELB
+* Application load balancer
+    * operates ate the request level HTTP / HTTPS
+    * Supports path-based reouting, host-based routing
+    * Supports the below as targets:
+        * Instances
+        * IP addresses
+        * Lambda Functions
+        * containers
+* Network Load Balancer
+    * Operates at the connection level
+    * Routes connections based on IP data
+    * Offers ultra high performance, low latency and TLS offload
+    * Can have static / Elastic IP
+    * Supports UDP and static IP addresses as targets
+
+<span style=color:orange>Exam Tip:</span>  If the exam mentions ultra low latency or TCP offload load balancer you are looking at Network ELB
+
+* Gateway Load Balancer  
+Used in front of Network Virtual Appliances such as firewalls, IDS/IPS and deep packet inspection systems
+* Can perform load balancing in front of those appliances 
+* Exchanges traffic with appliances with the GENEVE protocol 
+* Operates at L3 and listens on all ports
+* Forwards traffic to Target gateway in the listener rules
+
+<img src=./AWS_Gateway_ELB_Gateway.png alt="AWS Gateway ELB" />
+
+### ELB Use Cases
+* ALB
+    * Web Applications with L7 Routing
+    * Microservices architectures
+    * Lambda Targets
+* NLB
+    * TCP and UDP based applications
+    * Ultra-Low Latency
+    * Static IP addresses
+    * VPC Endpoint services
+* Gateway ELB
+    * Deploy, scale and manage 3rd party cirtual network appliances
+    * Centralised inspection and monitoring
+    * Firewalls, IDS/IPS and deep packets inspection systems
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
